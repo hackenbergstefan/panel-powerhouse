@@ -3,12 +3,15 @@ import {
   html,
   css,
   render,
-} from "https://unpkg.com/lit-element@3.3.2/lit-element.js?module";
+} from "https://unpkg.com/lit-element@3/lit-element.js?module";
 
-import { loadBgImage, roomPositions, svgCss } from "./bgimage.js";
+import "./bgimage.js";
 import "./water-tank.js";
 import "./spark-bar.js";
 import "./plasmaflow.js";
+import "./room-climate.js";
+import { HouseBackground } from "./bgimage.js";
+import { Room } from "./room.js";
 const helpers = await window.loadCardHelpers();
 
 function currentDay() {
@@ -19,54 +22,18 @@ function currentDay() {
   return [startOfDay, endOfDay];
 }
 
-function plotlyDefaultConfig(yrange, height = 70) {
-  return {
-    hours_to_show: "current_day",
-    config: {
-      displayModeBar: false,
-    },
-    layout: {
-      height: height,
-      plot_bgcolor: "transparent",
-      paper_bgcolor: "transparent",
-      legend: { visible: false },
-      title: {
-        pad: {
-          t: 0,
-          l: 0,
-          b: 0,
-          r: 0,
-        },
-      },
-      margin: {
-        t: 0,
-        l: 0,
-        b: 0,
-        r: 0,
-      },
-      yaxis: {
-        showgrid: false,
-        showticklabels: false,
-        zeroline: false,
-        showline: false,
-        ticks: "",
-        title: "",
-        fixedrange: true,
-        range: yrange,
-      },
-      xaxis: {
-        showgrid: false,
-        showticklabels: false,
-        zeroline: false,
-        showline: false,
-        ticks: "",
-        fixedrange: true,
-      },
-    },
-  };
-}
-
 class TabletPanel extends LitElement {
+  static get properties() {
+    return {
+      _backgroundReady: { type: Boolean },
+    };
+  }
+
+  constructor() {
+    super();
+    this._backgroundReady = false;
+  }
+
   setInnerNumeric(element, value, decimal = 1) {
     if (typeof element === "string") {
       element = this.renderRoot.querySelector(element);
@@ -240,6 +207,7 @@ class TabletPanel extends LitElement {
 
   async firstUpdated() {
     this.cards = {};
+    return;
 
     this.bgimage = await loadBgImage();
     const container = this.renderRoot.querySelector("#background-svg");
@@ -288,6 +256,7 @@ class TabletPanel extends LitElement {
   }
 
   updated(changedProperties) {
+    return;
     // UG
     this.updateHeizung();
     this.updateBatterie();
@@ -295,7 +264,7 @@ class TabletPanel extends LitElement {
     this.updateUgBuro();
     this.updateUgHobby();
     // EG
-    this.updateEgBad();
+    // this.updateEgBad();
     this.updateEgWohnzimmer();
     this.updateEgKuche();
     this.updateEgBuro();
@@ -330,12 +299,20 @@ class TabletPanel extends LitElement {
   }
 
   render() {
-    if (!this.hass) {
-      return html``;
+    console.log("render", this._backgroundReady);
+    const bg = html`<house-background
+      @background-ready=${() => {
+        this._backgroundReady = true;
+      }}
+    ></house-background>`;
+    if (!this.hass || !this._backgroundReady) {
+      return bg;
     }
+    return [bg, html`<climate-room .panel=${this} id="egbad"></climate-room>`];
 
     return [
       html`<div id="background-svg"></div>
+        <climate-room .hass=${this.hass} id="egbad"></climate-room>
         <div id="clock"></div>`,
       // UG
       this.renderHeizung(),
@@ -344,7 +321,7 @@ class TabletPanel extends LitElement {
       this.renderUgBuro(),
       this.renderUgHobby(),
       // EG
-      this.renderEgBad(),
+      // this.renderEgBad(),
       this.renderEgWohnzimmer(),
       this.renderEgKuche(),
       this.renderEgFlur(),
@@ -371,6 +348,73 @@ class TabletPanel extends LitElement {
   }
 
   static get styles() {
+    return [
+      css`
+        html,
+        body,
+        :host {
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+        }
+        :host {
+          z-index: 1;
+          font-size: 20px;
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          overflow: hidden;
+
+          --mdc-icon-size: 100%;
+          --aurora-red: #bf616a;
+          --aurora-blue: #5e81ac;
+          --aurora-green: #a3be8c;
+          --aurora-yellow: #ebcb8b;
+          --aurora-orange: #d08770;
+          --aurora-pink: #b48ead;
+          --frost-green: #8fbcbb;
+          --frost-sky-blue: #88c0d0;
+          --frost-cadet-blue: #81a1c1;
+          --frost-steel-blue: #5e81ac;
+          --snow-dark: #d8dee9;
+          --snow-medium: #e5e9f0;
+          --snow-light: #eceff4;
+          --polar-dark-gray: #2e3440;
+          --polar-bright-gray: #3b4252;
+          --polar-river-gray: #434c5e;
+          --polar-light-gray: #4c566a;
+
+          --ha-card-background: none;
+          --ha-card-border-width: 0;
+          --ha-card-border-radius: 0;
+
+          --primary-text-color: var(--snow-light);
+          --secondary-text-color: var(--snow-light);
+          color: var(--primary-text-color);
+
+          --state-inactive-color: var(--snow-dark);
+          --state-icon-color: var(--snow-dark);
+          --state-switch-active-color: var(--aurora-orange);
+          --state-active-color: var(--aurora-orange);
+        }
+
+        .grid {
+          position: absolute;
+          display: grid;
+          grid-template-columns: 1.5em auto;
+          grid-auto-flow: dense;
+          grid-gap: 7px 0;
+          height: fit-content;
+        }
+
+        .box-shadow {
+          box-shadow: 2px 2px 8px 2px #00000050;
+        }
+      `,
+      Room.styles,
+      HouseBackground.styles,
+    ];
     return css`
       html,
       body,

@@ -1,0 +1,18 @@
+export function setInnerNumeric(renderRoot, element, value, decimal = 1) {
+  if (typeof element === "string") {
+    element = renderRoot.querySelector(element);
+  }
+  if (!element) {
+    // console.log("setInnerNumeric: element undefined.");
+    return;
+  }
+  element.innerHTML = parseFloat(value).toFixed(decimal);
+}
+
+export function currentDay() {
+  const now = new Date();
+  const yyyymmdd = now.toISOString().split("T")[0];
+  const startOfDay = `${yyyymmdd} 00:00:00`;
+  const endOfDay = `${yyyymmdd} 23:59:59`;
+  return [startOfDay, endOfDay];
+}

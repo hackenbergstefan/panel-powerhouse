@@ -528,8 +528,8 @@
 	<polygon id="feld2" class="st10" points="0,400.3 289,400.3 900,199.3 900,0 0,0 	"/>
 	<polygon id="feld1" class="st10" points="2000,400.3 1711,400.3 1100,199.3 1100,0 2000,0 	"/>
 	<rect id="stromnutzung" x="10" y="10" class="st5" width="700" height="320"/>
-	<rect id="stromnutzungInfo" x="720" y="10" class="st5" width="170" height="180"/>
-	<rect id="stromverteilungInfo" x="1110" y="10" class="st5" width="170" height="180"/>
+	<rect id="stromnutzunginfo" x="720" y="10" class="st5" width="170" height="180"/>
+	<rect id="stromverteilunginfo" x="1110" y="10" class="st5" width="170" height="180"/>
 	<rect id="stromverteilung2" x="1605" y="11" class="st5" width="379" height="380.7"/>
 	<rect id="stromverteilung" x="1290" y="11" class="st5" width="350" height="320"/>
 	<rect id="pvgarage" x="65.4" y="873.1" class="st7" width="152.1" height="5"/>
@@ -538,10 +538,10 @@
 	
 		<rect id="pvwest" x="1360.8" y="369.2" transform="matrix(0.9515 0.3077 -0.3077 0.9515 189.3089 -457.0581)" class="st7" width="366.1" height="5"/>
 	<rect id="eingang" x="255.7" y="789" class="st5" width="74.7" height="99.8"/>
-	<rect id="stromOg" x="1668.1" y="522.6" class="st5" width="130" height="80"/>
-	<rect id="stromEg" x="1668.1" y="772.4" class="st5" width="130" height="80"/>
-	<rect id="stromUg" x="1668.1" y="1052.4" class="st5" width="130" height="80"/>
-	<rect id="stromGarage" x="210.8" y="893.3" class="st5" width="130" height="80"/>
+	<rect id="stromog" x="1668.1" y="522.6" class="st5" width="130" height="80"/>
+	<rect id="stromeg" x="1668.1" y="772.4" class="st5" width="130" height="80"/>
+	<rect id="stromug" x="1668.1" y="1052.4" class="st5" width="130" height="80"/>
+	<rect id="stromgarage" x="210.8" y="893.3" class="st5" width="130" height="80"/>
 	<rect id="wetterstation" y="470" class="st5" width="250" height="250"/>
 	<rect id="garage" x="91" y="900.8" class="st9" width="100.5" height="72.6"/>
 </g>
