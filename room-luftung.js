@@ -23,6 +23,20 @@ export class Luftung extends Room {
           </div>
         </div>
       </div>
+      <div
+        style="
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          --mdc-icon-size: 150px;
+          color: var(--polar-light-gray);
+        "
+      >
+        <ha-icon id="${this.id}-icon" icon="mdi:fan"></ha-icon>
+      </div>
     `;
   }
 
@@ -35,13 +49,13 @@ export class Luftung extends Room {
       `#${this.id}-temp span`,
       climate.attributes.current_temperature
     );
-    const lufter = this.panel.shadowRoot.querySelector("#lufter");
-    if (lufter) {
-      const duration = { low: 10, medium: 5, high: 3 }[
-        climate.attributes.fan_mode
-      ];
-      lufter.style.animation = `spin ${duration}s linear infinite`;
-    }
+
+    const duration = { low: 10, medium: 5, high: 3 }[
+      climate.attributes.fan_mode
+    ];
+    this.querySelector(
+      `#${this.id}-icon`
+    ).style.animation = `spin ${duration}s linear infinite`;
   }
 }
 customElements.define("room-luftung", Luftung);

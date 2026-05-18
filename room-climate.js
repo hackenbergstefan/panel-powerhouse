@@ -75,7 +75,6 @@ export class Climate extends Room {
           style: ":host ha-state-icon {width: 100%; height: 100%;}",
         },
       });
-      console.log(this.id, card);
       this._cards["light"] = card;
       this.requestUpdate();
     }

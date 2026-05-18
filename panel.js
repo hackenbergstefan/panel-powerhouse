@@ -100,6 +100,11 @@ class TabletPanel extends LitElement {
 
   static get cssAnimations() {
     return css`
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
       @keyframes blink {
         to {
           opacity: 0;
