@@ -5,6 +5,11 @@ import {
 import { Room } from "./room.js";
 
 export class Ugburo extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = ["sensor.shichtwerk"];
+  }
+
   render() {
     this.classList.add("box-shadow");
     if (!this._cards) {

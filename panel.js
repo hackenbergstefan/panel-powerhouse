@@ -21,6 +21,7 @@ import { Wetterstation } from "./room-wetterstation.js";
 import "./room-ugburo.js";
 import "./room-strom.js";
 import "./room-clock.js";
+import "./room-mull.js";
 
 class TabletPanel extends LitElement {
   static get properties() {
@@ -102,6 +103,11 @@ class TabletPanel extends LitElement {
       @keyframes blink {
         to {
           opacity: 0;
+        }
+      }
+      @keyframes scale {
+        to {
+          transform: scale(1.5);
         }
       }
       @keyframes text-pulse-glow {
@@ -321,6 +327,7 @@ class TabletPanel extends LitElement {
         .hass=${this.hass}
         id="stromnutzunginfo"
       ></room-strom-total-now>`,
+      html`<room-mull .panel=${this} .hass=${this.hass} id="mull"></room-mull>`,
     ];
   }
 }

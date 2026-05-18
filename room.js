@@ -17,6 +17,7 @@ export class Room extends LitElement {
   constructor() {
     super();
     this._cards = {};
+    this._updateEntities = [];
   }
 
   createRenderRoot() {
@@ -53,6 +54,22 @@ export class Room extends LitElement {
     for (const card in this._cards) {
       this._cards[card].hass = this.hass;
     }
+  }
+
+  shouldUpdate(changedProperties) {
+    if (!changedProperties.has("hass")) {
+      return super.shouldUpdate();
+    }
+    const oldHass = changedProperties.get("hass");
+    if (!oldHass) return true;
+
+    if (!this._updateEntities.every((val) => typeof val === "string")) {
+      console.warn("Not all strings: ", this, this._updateEntities);
+    }
+
+    return this._updateEntities.some(
+      (entity) => this.hass.states[entity] !== oldHass.states[entity]
+    );
   }
 
   render() {

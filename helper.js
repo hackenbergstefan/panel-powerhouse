@@ -9,8 +9,9 @@ export function setInnerNumeric(renderRoot, element, value, decimal = 1) {
   element.innerHTML = parseFloat(value).toFixed(decimal);
 }
 
-export function currentDay() {
-  const now = new Date();
+export function currentDay(offset = 0) {
+  let now = new Date();
+  now.setDate(now.getDate() + offset);
   const yyyymmdd = now.toISOString().split("T")[0];
   const startOfDay = `${yyyymmdd} 00:00:00`;
   const endOfDay = `${yyyymmdd} 23:59:59`;

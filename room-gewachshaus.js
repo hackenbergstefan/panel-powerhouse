@@ -1,11 +1,16 @@
-import {
-  html,
-  css,
-} from "https://unpkg.com/lit-element@3/lit-element.js?module";
+import { html } from "https://unpkg.com/lit-element@3/lit-element.js?module";
 import { Room } from "./room.js";
 import { setInnerNumeric } from "./helper.js";
 
 export class Gewachshaus extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [
+      "temperatur_gewachshaus_temperature",
+      "temperatur_gewachshaus_humidity",
+    ];
+  }
+
   render() {
     return html` <div class="room-container-inner">
       <div class="icon-label big">

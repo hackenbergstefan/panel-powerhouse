@@ -8,6 +8,18 @@ import { setInnerNumeric } from "./helper.js";
 const helpers = await window.loadCardHelpers();
 
 export class Wetterstation extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [
+      "sensor.hmip_swo_pl_00181d89a75413_temperatur",
+      "sensor.hmip_swo_pl_00181d89a75413_luftfeuchtigkeit",
+      "sensor.hmip_swo_pl_00181d89a75413_beleuchtungsstarke",
+      "sensor.hmip_swo_pl_00181d89a75413_windgeschwindigkeit",
+      "sensor.wettersensor_temperatur_max_taglich",
+      "sensor.wettersensor_temperatur_min_taglich",
+    ];
+  }
+
   async firstUpdated() {
     super.firstUpdated();
 

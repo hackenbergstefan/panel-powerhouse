@@ -8,6 +8,11 @@ import { setInnerNumeric } from "./helper.js";
 const mapping = { pvwest: 1, pvost: 2, pvgarage: 3 };
 
 export class PvBar extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [`sensor.goodwe_mppt${mapping[this.id]}_power`];
+  }
+
   static get styles() {
     return css`
       .pvbar-value {

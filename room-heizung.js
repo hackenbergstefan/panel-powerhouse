@@ -6,6 +6,17 @@ import { Room } from "./room.js";
 import { setInnerNumeric } from "./helper.js";
 
 export class HeizungRoom extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [
+      "shelly_heizung_total_active_power",
+      "heizung_speicheristtemp",
+      "heizung_wpvorlaufist",
+      "heizung_ruecklaufisttemp",
+      "sensor.shelly_heizung_total_active_power",
+    ];
+  }
+
   render() {
     this.classList.add("box-shadow");
     return [
@@ -69,6 +80,11 @@ export class HeizungRoom extends Room {
 customElements.define("room-heizung", HeizungRoom);
 
 export class HeizungBoiler extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = ["sensor.shelly_heizung_total_active_power"];
+  }
+
   render() {
     return html`<plasma-flow
       style="

@@ -6,6 +6,11 @@ import { Room } from "./room.js";
 import { setInnerNumeric } from "./helper.js";
 
 export class Luftung extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = ["climate.blauberg_s21"];
+  }
+
   render() {
     this.classList.add("box-shadow");
     return html`

@@ -53,6 +53,11 @@ const climateEntities = {
 };
 
 export class Climate extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = Object.values(climateEntities[this.id]);
+  }
+
   render() {
     this.classList.add("box-shadow");
     return [

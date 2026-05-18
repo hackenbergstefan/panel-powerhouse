@@ -290,13 +290,25 @@ export class StromNow extends Room {
     stromgarage: "shelly_garage_total_active_power",
   };
 
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [StromNow.mapping[this.id]];
+  }
+
   render() {
+    const additionalStyle = {
+      stromug: "",
+      stromeg: "",
+      stromog: "",
+      stromgarage: "justify-content: center;",
+    }[this.id];
     return html`
       <div
         style="
           display: flex;
           align-items: center;
           height: 100%;
+          ${additionalStyle}
         "
       >
         <div
@@ -345,6 +357,16 @@ export class StromTotalNow extends Room {
       entityMax: "pv_power_max_taglich",
     },
   };
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [StromTotalNow.mapping[this.id].entityNow].concat(
+      StromTotalNow.mapping[this.id].entityMax
+        ? [StromTotalNow.mapping[this.id].entityMax]
+        : []
+    );
+  }
+
   render() {
     return html`
       <div
