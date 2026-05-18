@@ -22,6 +22,7 @@ import "./room-ugburo.js";
 import "./room-strom.js";
 import "./room-clock.js";
 import "./room-mull.js";
+import { Garage } from "./room-garage.js";
 
 class TabletPanel extends LitElement {
   static get properties() {
@@ -207,6 +208,7 @@ class TabletPanel extends LitElement {
       PvBar.styles,
       Batterie.styles,
       Wetterstation.styles,
+      Garage.styles,
     ];
   }
   render() {
@@ -333,6 +335,11 @@ class TabletPanel extends LitElement {
         id="stromnutzunginfo"
       ></room-strom-total-now>`,
       html`<room-mull .panel=${this} .hass=${this.hass} id="mull"></room-mull>`,
+      html`<room-garage
+        .panel=${this}
+        .hass=${this.hass}
+        id="garage"
+      ></room-garage>`,
     ];
   }
 }
