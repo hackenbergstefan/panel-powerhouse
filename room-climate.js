@@ -5,6 +5,8 @@ import {
 import { Room } from "./room.js";
 import { setInnerNumeric } from "./helper.js";
 
+const helpers = await window.loadCardHelpers();
+
 const climateEntities = {
   ogbad: {
     climate: "climate.hmip_sthd_000ea0c9999128",
@@ -40,6 +42,7 @@ const climateEntities = {
   egflur: {
     climate: "climate.hmip_sthd_000e9be996750d",
     valve: "number.hmip_falmot_c12_001b9be9a04a8c_level_ch4",
+    light: "switch.shelly_mini3_eg_flur",
   },
   egburo: {
     climate: "climate.hmip_sthd_000e9be9967562",
@@ -58,10 +61,40 @@ export class Climate extends Room {
     this._updateEntities = Object.values(climateEntities[this.id]);
   }
 
+  async firstUpdated() {
+    await super.firstUpdated();
+    const light = climateEntities[this.id].light;
+    if (light) {
+      const card = await helpers.createCardElement({
+        type: "button",
+        entity: light,
+        icon: "mdi:lightbulb",
+        show_state: false,
+        show_name: false,
+        card_mod: {
+          style: ":host ha-state-icon {width: 100%; height: 100%;}",
+        },
+      });
+      console.log(this.id, card);
+      this._cards["light"] = card;
+      this.requestUpdate();
+    }
+  }
+
+  _clickMoreInfo() {
+    this.dispatchEvent(
+      new CustomEvent("hass-more-info", {
+        detail: { entityId: climateEntities[this.id].climate },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
   render() {
     this.classList.add("box-shadow");
     return [
-      html` <div class="room-container-inner">
+      html` <div class="room-container-inner" @click=${this._clickMoreInfo}>
         <div class="icon-label big">
           <ha-icon icon="mdi:thermometer"></ha-icon>
           <div id="${this.id}-temp-is">
@@ -122,6 +155,9 @@ export class Climate extends Room {
             </div>
           `
         : html``,
+      climateEntities[this.id].light
+        ? html`<div class="light">${this._cards["light"]}</div>`
+        : html``,
     ];
   }
 
@@ -143,6 +179,13 @@ export class Climate extends Room {
       }
       .room-window-container ha-icon {
         --mdc-icon-size: 100%;
+      }
+      .light {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 50px;
+        z-index: 1;
       }
     `;
   }

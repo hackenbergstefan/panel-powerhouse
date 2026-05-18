@@ -90,7 +90,7 @@ export class Stromverteilung extends Room {
     this.renderRoot.appendChild(card);
     this._cards["stromverteilung-graph"] = card;
 
-    await this.requestUpdate();
+    this.requestUpdate();
   }
 }
 customElements.define("room-stromverteilung", Stromverteilung);
