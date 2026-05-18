@@ -37,6 +37,7 @@ export const IDS = {
   stromverteilunginfo: {},
   wetterstation: {},
   garage: {},
+  mull: {},
 };
 
 async function loadSvg(path) {
