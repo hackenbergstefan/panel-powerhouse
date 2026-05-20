@@ -189,7 +189,7 @@ export class Batterie extends Room {
     if (this._chartInitialized) {
       const graph = this.querySelector("#batterie-graph");
       const now = new Date();
-      if (now > container.layout.xaxis.range[1]) {
+      if (now > graph.layout.xaxis.range[1]) {
         // It's a new day! Reset the layout range and wipe old data to save memory
         const update = {
           x: [[]],
