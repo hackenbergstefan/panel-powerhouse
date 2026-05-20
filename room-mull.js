@@ -59,7 +59,7 @@ export class Mull extends Room {
               .filter(
                 (event) =>
                   new Date(event.start).setHours(0, 0, 0, 0) ==
-                  new Date(startOfToday.getDate() + 1).getTime()
+                  new Date(startOfToday).setDate(startOfToday.getDate() + 1)
               )
               .map((event) => event.summary.toLowerCase()) || [];
         },
