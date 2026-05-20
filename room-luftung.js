@@ -35,7 +35,11 @@ export class Luftung extends Room {
           color: var(--polar-light-gray);
         "
       >
-        <ha-icon id="${this.id}-icon" icon="mdi:fan"></ha-icon>
+        <ha-icon
+          style="margin-top:40px"
+          id="${this.id}-icon"
+          icon="mdi:fan"
+        ></ha-icon>
       </div>
     `;
   }

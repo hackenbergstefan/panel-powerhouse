@@ -17,3 +17,13 @@ export function currentDay(offset = 0) {
   const endOfDay = `${yyyymmdd} 23:59:59`;
   return [startOfDay, endOfDay];
 }
+
+export function currentDayJs() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  return [start, end];
+}

@@ -31,7 +31,7 @@ const climateEntities = {
     window: "binary_sensor.fenster_eg_bad_window",
   },
   egwohnzimmer: {
-    climate: "climate.hmip_sthd_000e9be9967562",
+    climate: "climate.hmip_sthd_000e9be9967543",
     valve: "number.hmip_falmot_c12_001b9be9a04a8c_level_ch6",
     window: "binary_sensor.bthome_sensor_67af_window",
   },
@@ -136,7 +136,7 @@ export class Climate extends Room {
           <spark-bar
             color="var(--aurora-orange)"
             colorGlow="var(--aurora-red)"
-            drift="20"
+            drift="50"
           ></spark-bar>
         </div>
       `,

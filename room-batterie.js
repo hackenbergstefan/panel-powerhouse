@@ -2,12 +2,21 @@ import {
   html,
   css,
 } from "https://unpkg.com/lit-element@3/lit-element.js?module";
-import { Room } from "./room.js";
-import { setInnerNumeric } from "./helper.js";
+import "https://unpkg.com/plotly.js-dist-min@3/plotly.min.js?module";
 
-const helpers = await window.loadCardHelpers();
+import { Room } from "./room.js";
+import { currentDayJs, setInnerNumeric } from "./helper.js";
 
 export class Batterie extends Room {
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [
+      "sensor.goodwe_battery_state_of_charge",
+      "sensor.goodwe_battery_power",
+      "sensor.goodwe_battery_temperature",
+    ];
+  }
+
   static get styles() {
     return css`
       #batterie-icon-1,
@@ -22,7 +31,7 @@ export class Batterie extends Room {
         left: 0;
         right: 0;
         bottom: 0;
-        height: 50%;
+        height: 40%;
       }
     `;
   }
@@ -56,71 +65,98 @@ export class Batterie extends Room {
     `;
   }
 
+  async _fetchTodayHistory() {
+    const [dayStart, _] = currentDayJs();
+
+    try {
+      const entity = "sensor.goodwe_battery_state_of_charge";
+      const history = await this.hass.callWS({
+        type: "history/history_during_period",
+        start_time: dayStart,
+        entity_ids: [entity],
+        significant_changes_only: false,
+        no_attributes: true,
+      });
+
+      // Extract timestamps and states
+      const entityHistory = history[entity] || [];
+      const xData = [];
+      const yData = [];
+
+      entityHistory.forEach((stateUpdate) => {
+        const val = parseFloat(stateUpdate.s); // 's' stands for state in this API schema
+        if (!isNaN(val)) {
+          // Convert HA timestamp (seconds) to a JavaScript Date object
+          xData.push(new Date(stateUpdate.lu * 1000)); // 'lu' is last_updated timestamp
+          yData.push(val);
+        }
+      });
+
+      return { x: xData, y: yData };
+    } catch (err) {
+      console.error("Failed to fetch Home Assistant history:", err);
+      return { x: [], y: [] };
+    }
+  }
+
   async firstUpdated() {
     await super.firstUpdated();
 
-    const el = this.querySelector("#batterie-graph");
-    const card = await helpers.createCardElement({
-      type: "custom:plotly-graph",
-      color_scheme: ["#5e81ac"],
-      entities: [
-        {
-          entity: "sensor.goodwe_battery_state_of_charge",
-          name: "PV",
-          fill: "tozeroy",
-          line: { width: 2 },
-        },
-      ],
-      hours_to_show: "current_day",
-      config: {
-        displayModeBar: false,
+    const historyData = await this._fetchTodayHistory();
+    const trace = {
+      x: historyData.x,
+      y: historyData.y,
+      mode: "lines",
+      line: { color: "#5e81ac", width: 2 },
+      fill: "tozeroy",
+    };
+    const layout = {
+      font: {
+        size: 10,
       },
-      layout: {
-        height: el.clientHeight,
-        font: {
-          size: 10,
-        },
-        plot_bgcolor: "transparent",
-        paper_bgcolor: "transparent",
-        legend: { visible: false },
-        title: {
-          pad: {
-            t: 0,
-            l: 0,
-            b: 0,
-            r: 0,
-          },
-        },
-        margin: {
+      plot_bgcolor: "transparent",
+      paper_bgcolor: "transparent",
+      legend: { visible: false },
+      title: {
+        pad: {
           t: 0,
           l: 0,
-          b: 5,
+          b: 0,
           r: 0,
         },
-        yaxis: {
-          showgrid: true,
-          showticklabels: false,
-          zeroline: false,
-          showline: false,
-          tick0: 0,
-          dtick: 25,
-          title: "",
-          fixedrange: true,
-          range: [0, 100],
-        },
-        xaxis: {
-          showgrid: false,
-          showticklabels: false,
-          zeroline: false,
-          showline: false,
-          ticks: "",
-          fixedrange: true,
-        },
       },
-    });
-    el.appendChild(card);
-    this._cards["batterie-graph"] = card;
-    await this.requestUpdate();
+      margin: {
+        t: 0,
+        l: 0,
+        b: 5,
+        r: 0,
+      },
+      yaxis: {
+        showgrid: true,
+        showticklabels: false,
+        zeroline: false,
+        showline: false,
+        tick0: 0,
+        dtick: 25,
+        title: "",
+        fixedrange: true,
+        range: [0, 100],
+      },
+      xaxis: {
+        showgrid: false,
+        showticklabels: false,
+        zeroline: false,
+        showline: false,
+        ticks: "",
+        fixedrange: true,
+        range: currentDayJs(),
+      },
+    };
+    const config = { responsive: false, displayModeBar: false };
+
+    const graph = this.querySelector("#batterie-graph");
+    Plotly.newPlot(graph, [trace], layout, config);
+    this._chartInitialized = true;
   }
 
   updated() {
@@ -148,6 +184,28 @@ export class Batterie extends Room {
       if (!el) return;
       el.classList.toggle("hidden", load < (idx - 1) * 25);
     });
+
+    // Update Graph
+    if (this._chartInitialized) {
+      const graph = this.querySelector("#batterie-graph");
+      const now = new Date();
+      if (now > container.layout.xaxis.range[1]) {
+        // It's a new day! Reset the layout range and wipe old data to save memory
+        const update = {
+          x: [[]],
+          y: [[]],
+        };
+        const layoutUpdate = {
+          "xaxis.range": currentDayJs(),
+        };
+        Plotly.update(graph, update, layoutUpdate, [0]);
+      }
+      const update = {
+        x: [[now]],
+        y: [[parseFloat(level)]],
+      };
+      Plotly.extendTraces(graph, update, [0]);
+    }
   }
 }
 customElements.define("room-batterie", Batterie);

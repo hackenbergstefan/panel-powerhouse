@@ -250,7 +250,7 @@ export class Stromnutzung extends Room {
         },
         margin: {
           t: 0,
-          l: 30,
+          l: 40,
           b: 20,
           r: 0,
         },
@@ -292,7 +292,7 @@ export class StromNow extends Room {
 
   connectedCallback() {
     super.connectedCallback();
-    this._updateEntities = [StromNow.mapping[this.id]];
+    this._updateEntities = [`sensor.${StromNow.mapping[this.id]}`];
   }
 
   render() {
@@ -360,10 +360,10 @@ export class StromTotalNow extends Room {
 
   connectedCallback() {
     super.connectedCallback();
-    this._updateEntities = [StromTotalNow.mapping[this.id].entityNow].concat(
-      StromTotalNow.mapping[this.id].entityMax
-        ? [StromTotalNow.mapping[this.id].entityMax]
-        : []
+
+    const config = StromTotalNow.mapping[this.id];
+    this._updateEntities = [`sensor.${config.entityNow}`].concat(
+      config.entityMax ? [`sensor.${config.entityMax}`] : []
     );
   }
 

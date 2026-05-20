@@ -45,7 +45,7 @@ export class PvBar extends Room {
         colorGlow="var(--aurora-yellow)"
         size="10"
         invertDriftDirection="true"
-        drift="20"
+        drift="50"
       ></spark-bar>
     `;
   }
@@ -53,7 +53,7 @@ export class PvBar extends Room {
     super.updated();
 
     if (["pvost", "pvwest"].includes(this.id)) {
-      this.style.transform = "rotate(18deg)";
+      this.style.transform = "rotate(17deg)";
     }
 
     const power =

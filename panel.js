@@ -157,7 +157,7 @@ class TabletPanel extends LitElement {
         }
         :host {
           z-index: 1;
-          font-size: 20px;
+          font-size: 22px;
           position: absolute;
           left: 0;
           top: 0;
