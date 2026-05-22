@@ -18,11 +18,11 @@ import "./room-eingang.js";
 import { Batterie } from "./room-batterie.js";
 import "./room-luftung.js";
 import { Wetterstation } from "./room-wetterstation.js";
-import "./room-ugburo.js";
 import "./room-strom.js";
 import "./room-clock.js";
 import "./room-mull.js";
 import { Garage } from "./room-garage.js";
+import { Ugburo } from "./room-ugburo.js";
 
 class TabletPanel extends LitElement {
   static get properties() {
@@ -209,6 +209,7 @@ class TabletPanel extends LitElement {
       Batterie.styles,
       Wetterstation.styles,
       Garage.styles,
+      Ugburo.styles,
     ];
   }
   render() {
@@ -220,6 +221,7 @@ class TabletPanel extends LitElement {
     if (!this.hass || !this._backgroundReady) {
       return bg;
     }
+    const housepath = this.renderRoot.querySelector("#haus polyline");
     return [
       bg,
       html`<room-clock .panel=${this} .hass=${this.hass}></room-clock>`,
@@ -340,6 +342,9 @@ class TabletPanel extends LitElement {
         .hass=${this.hass}
         id="garage"
       ></room-garage>`,
+      // html`<glowing-particles-path
+      //   .path=${housepath}
+      // ></glowing-particles-path>`,
     ];
   }
 }
