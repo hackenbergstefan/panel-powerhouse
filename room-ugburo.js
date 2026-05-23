@@ -7,7 +7,12 @@ import { Room } from "./room.js";
 export class Ugburo extends Room {
   connectedCallback() {
     super.connectedCallback();
-    this._updateEntities = ["sensor.shichtwerk"];
+    this._updateEntities = [
+      "sensor.shichtwerk",
+      "sensor.schichtwerk_fortschritt",
+      "sensor.schichtwerk_material",
+      "binary_sensor.bthome_sensor_2272_window",
+    ];
   }
 
   static get styles() {
@@ -127,6 +132,16 @@ export class Ugburo extends Room {
           />
         </svg>
       </div>
+      <div class="room-window-container" id="${this.id}-window">
+        <ha-icon
+          class="icon-window-closed"
+          icon="mdi:window-closed-variant"
+        ></ha-icon>
+        <ha-icon
+          class="icon-window-opened"
+          icon="mdi:window-open-variant"
+        ></ha-icon>
+      </div>
     `;
   }
 
@@ -144,6 +159,15 @@ export class Ugburo extends Room {
     progress.classList.toggle("hidden", !printing);
     progress.querySelector("span").innerHTML =
       this.hass.states["sensor.schichtwerk_fortschritt"].state;
+
+    const windowState =
+      this.hass.states["binary_sensor.bthome_sensor_2272_window"].state;
+    this.renderRoot
+      .querySelector(".icon-window-opened")
+      .classList.toggle("hidden", windowState !== "on");
+    this.renderRoot
+      .querySelector(".icon-window-closed")
+      .classList.toggle("hidden", windowState === "on");
   }
 }
 customElements.define("room-ugburo", Ugburo);
