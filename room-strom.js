@@ -7,6 +7,20 @@ import { currentDay, setInnerNumeric } from "./helper.js";
 
 const helpers = await window.loadCardHelpers();
 
+function powerMode(hass) {
+  const pv = hass.states["sensor.goodwe_pv_power"].state;
+  const bat = hass.states["sensor.goodwe_battery_power"].state;
+  const grid = hass.states["sensor.goodwe_active_power"].state;
+  if (grid > 100) {
+    return "grid";
+  } else if (bat > 0) {
+    return "bat";
+  } else if (pv > 0) {
+    return "pv";
+  }
+  return "unknown";
+}
+
 export class Stromverteilung extends Room {
   async firstUpdated() {
     await super.firstUpdated();
@@ -64,7 +78,7 @@ export class Stromverteilung extends Room {
         margin: {
           t: 0,
           l: 0,
-          b: 80,
+          b: 130,
           r: 30,
         },
         yaxis: {
@@ -120,7 +134,7 @@ export class Stromverteilung2 extends Room {
           textposition: "inside",
           texttemplate:
             "<span style='font-size: 0.8em; font-weigth: 700; color: var(--primary-text-color);'>%{value:.0f} kWh</span>",
-          hole: 0.65,
+          hole: 0.7,
           marker: {
             colors: ["#d08770", "#88c0d0", "#a3be8c", "#b48ead", "#8fbcbb"],
           },
@@ -130,7 +144,7 @@ export class Stromverteilung2 extends Room {
         {
           entity: "sensor.stromverbrauch_keller_taglich",
           type: "pie",
-          domain: { x: [0.2, 0.8], y: [0.2, 0.8] },
+          domain: { x: [0.21, 0.79], y: [0.21, 0.79] },
           values: [
             "$ex Number(hass.states['sensor.goodwe_today_s_pv_generation'].state - hass.states['sensor.goodwe_today_battery_charge'].state) / 1000",
             "$ex Number(hass.states['sensor.goodwe_today_energy_import'].state) / 1000",
@@ -156,7 +170,7 @@ export class Stromverteilung2 extends Room {
         annotations: [
           {
             text: `$fn ({hass}) =>
-              "<span style='font-size: 34px; font-weight: 700;'>"
+              "<span style='font-size: 40px; font-weight: 700;'>"
               + Number(hass.states['sensor.goodwe_today_load'].state).toFixed(1) 
               + "</span><br><span style='font-size: 10px;'>kWh</span>"`,
             xref: "paper",
@@ -171,7 +185,7 @@ export class Stromverteilung2 extends Room {
         height: el.clientHeight,
         plot_bgcolor: "transparent",
         paper_bgcolor: "transparent",
-        legend: { visible: true, y: 0, orientation: "h", font: { size: 10 } },
+        legend: { visible: true, y: 0, orientation: "h", font: { size: 13 } },
         title: {
           pad: {
             t: 0,
@@ -234,12 +248,12 @@ export class Stromnutzung extends Room {
       },
       layout: {
         font: {
-          size: 10,
+          size: 15,
         },
         height: this.clientHeight,
         plot_bgcolor: "transparent",
         paper_bgcolor: "transparent",
-        legend: { visible: true, y: 0 },
+        legend: { visible: true, y: -0.1 },
         title: {
           pad: {
             t: 0,
@@ -251,7 +265,7 @@ export class Stromnutzung extends Room {
         margin: {
           t: 0,
           l: 40,
-          b: 20,
+          b: 100,
           r: 0,
         },
         yaxis: {
@@ -290,9 +304,48 @@ export class StromNow extends Room {
     stromgarage: "shelly_garage_total_active_power",
   };
 
+  static get styles() {
+    return css`
+      .flow-chevron {
+        width: 20px;
+        height: 30px;
+        margin-left: 5px;
+
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3l7 9-7 9M7 3l7 9-7 9'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3l7 9-7 9M7 3l7 9-7 9'/%3E%3C/svg%3E");
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        background: linear-gradient(
+          to right,
+          var(--power-color-transparent) 0%,
+          rgba(255, 255, 255, 1) 50%,
+          var(--power-color-transparent) 100%
+        );
+        background-size: 500% 100%;
+        animation: chevron-pulse var(--power-animation-duration) linear infinite;
+        transform: scaleX(-1);
+      }
+
+      @keyframes chevron-pulse {
+        0% {
+          background-position: 500% 0;
+        }
+
+        100% {
+          background-position: -500% 0;
+        }
+      }
+    `;
+  }
+
   connectedCallback() {
     super.connectedCallback();
-    this._updateEntities = [`sensor.${StromNow.mapping[this.id]}`];
+    this._updateEntities = [
+      `sensor.${StromNow.mapping[this.id]}`,
+      "sensor.goodwe_pv_power",
+      "sensor.goodwe_battery_power",
+      "sensor.goodwe_active_power",
+    ];
   }
 
   render() {
@@ -306,25 +359,27 @@ export class StromNow extends Room {
       <div
         style="
           display: flex;
+          gap: 0 10px;
           align-items: center;
           height: 100%;
+          background: linear-gradient(to right, transparent, var(--power-color-transparent) 30% 70%, transparent);
+          border-top: 4px solid var(--power-color);
+          border-bottom: 4px solid var(--power-color);
+          border-image: linear-gradient(to right, transparent, var(--power-color) 30% 70%, transparent) 1;
+          border-width: 4px 0 4px 0;
+          border-style: solid;
           ${additionalStyle}
         "
       >
+        <div class="flow-chevron"></div>
         <div
-          class="icon-label big"
+          class="big"
           style="
-        color: var(--aurora-green);
-        padding-left: 5px;
-        grid-template-columns: 25px auto;
-        --mdc-icon-size: 0.8em;
-      "
+          padding-left: 5px;
+        "
         >
-          <ha-icon icon="mdi:flash"></ha-icon>
-          <div>
-            <span></span>
-            <span class="unit">W</span>
-          </div>
+          <span></span>
+          <span class="unit" style="margin-left:-5px">W</span>
         </div>
       </div>
     `;
@@ -333,17 +388,37 @@ export class StromNow extends Room {
   updated() {
     super.updated();
 
-    setInnerNumeric(
-      this.renderRoot,
-      `#${this.id} span`,
-      this.hass.states[`sensor.${StromNow.mapping[this.id]}`].state,
-      { decimal: 0 }
+    const power = this.hass.states[`sensor.${StromNow.mapping[this.id]}`].state;
+    setInnerNumeric(this.renderRoot, `#${this.id} span`, power, { decimal: 0 });
+
+    const [color, colorTransparent] = {
+      pv: ["rgb(235, 203, 139)", `rgba(235, 203, 139, ${power / 3000})`],
+      bat: ["rgb(94, 129, 172)", `rgba(94, 129, 172, ${power / 3000})`],
+      grid: ["rgb(191, 97, 106)", `rgba(191, 97, 106, ${power / 3000})`],
+      unknown: ["rgb(0,0,0)", `rgba(0,0,0, ${power / 3000})`],
+    }[powerMode(this.hass)];
+
+    this.renderRoot.style.setProperty("--power-color", color);
+    this.renderRoot.style.setProperty(
+      "--power-color-transparent",
+      colorTransparent
+    );
+    this.renderRoot.style.setProperty(
+      "--power-animation-duration",
+      `${15 - power / 1000}s`
     );
   }
 }
 customElements.define("room-strom-now", StromNow);
 
 export class StromTotalNow extends Room {
+  static get properties() {
+    return {
+      haus: { type: Object },
+      ...Room.properties,
+    };
+  }
+
   static mapping = {
     stromverteilunginfo: {
       style: "color: var(--aurora-green);",
@@ -419,3 +494,85 @@ export class StromTotalNow extends Room {
   }
 }
 customElements.define("room-strom-total-now", StromTotalNow);
+
+export class StromHausAnimation extends Room {
+  static get properties() {
+    return {
+      haus: { type: Object },
+      ...Room.properties,
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this._updateEntities = [
+      "sensor.goodwe_pv_power",
+      "sensor.goodwe_battery_power",
+      "sensor.goodwe_active_power",
+    ];
+  }
+
+  static get styles() {
+    return css`
+      @keyframes foo {
+        0% {
+          background-position: 0 -100%;
+        }
+
+        100% {
+          background-position: 0 200%;
+        }
+      }
+      room-strom-haus-animation {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        mask: url("#haus-mask");
+
+        background-image: linear-gradient(
+          0deg,
+          rgba(255, 0, 0, 0) 0%,
+          var(--strom-haus-color) 50%,
+          rgba(255, 0, 0, 0) 100%
+        );
+        background-position: 0 0%;
+        background-size: 100% 50%;
+        background-repeat: no-repeat;
+        animation: foo 5s linear infinite;
+        animation-direction: var(--strom-haus-animation-direction);
+      }
+      room-strom-haus-animation polyline {
+        stroke: #ffffff !important;
+        stroke-width: 9 !important;
+      }
+    `;
+  }
+
+  render() {
+    return html`<svg>
+      <defs><mask id="haus-mask">${this.haus}</mask></defs>
+    </svg>`;
+  }
+
+  updated() {
+    super.updated();
+
+    const [color, direction] = {
+      pv: ["aurora-yellow", "normal"],
+      bat: ["aurora-blue", "reverse"],
+      grid: ["aurora-red", "normal"],
+    }[powerMode(this.hass)];
+    console.log(color, direction);
+
+    this.renderRoot.style.setProperty(
+      "--strom-haus-animation-direction",
+      direction
+    );
+    this.renderRoot.style.setProperty("--strom-haus-color", `var(--${color})`);
+  }
+}
+customElements.define("room-strom-haus-animation", StromHausAnimation);

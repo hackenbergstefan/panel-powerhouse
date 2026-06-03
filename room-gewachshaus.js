@@ -41,6 +41,14 @@ export class Gewachshaus extends Room {
         this.hass.states[`sensor.${entity}`].state
       )
     );
+
+    const g = this.panel.renderRoot.querySelector("#gewachshausShape");
+    if (g) {
+      g.classList.toggle(
+        "text-pulse-glow",
+        this.hass.states["sensor.temperatur_gewachshaus_temperature"].state > 40
+      );
+    }
   }
 }
 customElements.define("room-gewachshaus", Gewachshaus);

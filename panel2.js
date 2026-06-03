@@ -23,6 +23,7 @@ import "./room-clock.js";
 import "./room-mull.js";
 import { Garage } from "./room-garage.js";
 import { Ugburo } from "./room-ugburo.js";
+import { StromHausAnimation, StromNow } from "./room-strom.js";
 
 class TabletPanel extends LitElement {
   static get properties() {
@@ -48,12 +49,14 @@ class TabletPanel extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
+    console.log("connected");
+
     const viewport = document.head.querySelector('meta[name="viewport"]');
     const innerWidth = window.innerWidth;
     const meta = `width=device-width, initial-scale=${
-      innerWidth / 2000
+      innerWidth / 2400
     }, minimum-scale=${
-      innerWidth / 2000
+      innerWidth / 2400
     }, maximum-scale=0.75, user-scalable=no`;
     if (viewport) {
       viewport.setAttribute("content", meta);
@@ -218,10 +221,13 @@ class TabletPanel extends LitElement {
       Wetterstation.styles,
       Garage.styles,
       Ugburo.styles,
+      StromNow.styles,
+      StromHausAnimation.styles,
     ];
   }
   render() {
     const bg = html`<house-background
+      svgpath="local/powerhouse/bgimage2.svg"
       @background-ready=${() => {
         this._backgroundReady = true;
       }}
@@ -351,7 +357,12 @@ class TabletPanel extends LitElement {
         .hass=${this.hass}
         id="garage"
       ></room-garage>`,
+      html`<room-strom-haus-animation
+        .panel=${this}
+        .hass=${this.hass}
+        .haus=${this.renderRoot.querySelector("#haus").cloneNode(true)}
+      ></room-strom-haus-animation>`,
     ];
   }
 }
-customElements.define("tablet-panel", TabletPanel);
+customElements.define("tablet-panel2", TabletPanel);

@@ -532,4 +532,16 @@
 	<rect id="garage" x="172" y="900.8" class="st5" width="100.5" height="72.6"/>
 	<rect id="mull" x="32.5" y="879" class="st5" width="59.8" height="94.4"/>
 </g>
+<g id="Ebene_8">
+	<polyline id="energy_bat_eg1" class="st5" points="758.2,1119.7 758.2,1176.3 1616.1,1176.3 1616.1,742.6 987.2,742.6 
+		987.2,758.7 	"/>
+	<polyline id="energy_bat_eg2" class="st5" points="758.2,1119.7 758.2,1176.3 1616.1,1176.3 1616.1,742.6 1247.8,742.6 
+		1247.8,758.7 	"/>
+	<polyline id="energy_bat_eg3" class="st5" points="758.2,1119.7 758.2,1176.3 1616.1,1176.3 1616.1,742.6 1489.3,742.6 
+		1489.3,758.7 	"/>
+	<polyline id="energy_bat_eg4" class="st5" points="758.2,1119.7 758.2,1176.3 1616.1,1176.3 1616.1,742.6 752.6,742.6 
+		752.6,758.7 	"/>
+	<polyline id="energy_bat_eg5" class="st5" points="758.2,1119.7 758.2,1176.3 1616.1,1176.3 1616.1,742.6 507.2,742.6 
+		507.2,758.7 	"/>
+</g>
 </svg>

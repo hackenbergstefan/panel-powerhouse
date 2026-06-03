@@ -23,7 +23,7 @@ export class Batterie extends Room {
       #batterie-icon-2,
       #batterie-icon-3,
       #batterie-icon-4 {
-        fill: var(--aurora-green);
+        fill: var(--aurora-blue);
       }
 
       #batterie-graph {
@@ -178,11 +178,13 @@ export class Batterie extends Room {
     );
 
     const batterieIcons = [1, 2, 3, 4].map((i) =>
-      this.renderRoot.querySelector(`#batterie-icon-${i}`)
+      this.panel.renderRoot.querySelector(
+        `house-background #batterie-icon-${i}`
+      )
     );
     batterieIcons.forEach((el, idx) => {
       if (!el) return;
-      el.classList.toggle("hidden", load < (idx - 1) * 25);
+      el.classList.toggle("hidden", level < idx * 25);
     });
 
     // Update Graph

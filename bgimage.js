@@ -49,6 +49,12 @@ async function loadSvg(path) {
 }
 
 export class HouseBackground extends LitElement {
+  static get properties() {
+    return {
+      svgpath: { type: String },
+    };
+  }
+
   static get styles() {
     return css`
       house-background,
@@ -81,6 +87,7 @@ export class HouseBackground extends LitElement {
     super();
 
     this.positionsCompleted = false;
+    this.svgpath = "local/powerhouse/bgimage.svg";
   }
 
   createRenderRoot() {
@@ -88,7 +95,7 @@ export class HouseBackground extends LitElement {
   }
 
   async firstUpdated() {
-    this.svg = await loadSvg("local/powerhouse/bgimage.svg");
+    this.svg = await loadSvg(this.svgpath);
     this.adjustRoomSizes();
     await this.requestUpdate();
 

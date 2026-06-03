@@ -173,8 +173,8 @@ export class Climate extends Room {
         position: absolute;
         top: 10px;
         right: 10px;
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
       }
       .room-window-container ha-icon {
         --mdc-icon-size: 100%;
