@@ -70,8 +70,7 @@ class TabletPanel extends LitElement {
       .querySelector("home-assistant")
       .shadowRoot.querySelector("home-assistant-main")
       .shadowRoot.querySelector("ha-drawer")
-      .shadowRoot.querySelector("aside")
-      .setAttribute("style", "display:none");
+      .setAttribute("style", "--ha-sidebar-width: 0");
   }
 
   static get cssContainers() {
