@@ -20,6 +20,7 @@ const climateEntities = {
   ogkind1: {
     climate: "climate.hmip_sthd_000ea0c9999126",
     valve: "number.hmip_falmot_c12_001ba2699cca62_level_ch2",
+    window: "binary_sensor.bthome_sensor_5998_window"
   },
   ogkind2: {
     climate: "climate.hmip_sthd_000ea0c999910a",
