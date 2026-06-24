@@ -24,6 +24,7 @@ import "./room-mull.js";
 import { Garage } from "./room-garage.js";
 import { Ugburo } from "./room-ugburo.js";
 import { StromHausAnimation, StromNow } from "./room-strom.js";
+import "./room-awning.js";
 
 class TabletPanel extends LitElement {
   static get properties() {
@@ -361,6 +362,20 @@ class TabletPanel extends LitElement {
         .hass=${this.hass}
         .haus=${this.renderRoot.querySelector("#haus").cloneNode(true)}
       ></room-strom-haus-animation>`,
+      html`<room-awning
+        .panel=${this}
+        .hass=${this.hass}
+        .icon=${this.renderRoot.querySelector("#markise").cloneNode(true)}
+        id="markiseost"
+        awning="ost"
+      ></room-awning>`,
+      html`<room-awning
+        .panel=${this}
+        .hass=${this.hass}
+        .icon=${this.renderRoot.querySelector("#markise").cloneNode(true)}
+        id="markisewest"
+        awning="west"
+      ></room-awning>`,
     ];
   }
 }

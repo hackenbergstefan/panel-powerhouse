@@ -38,6 +38,8 @@ export const IDS = {
   wetterstation: {},
   garage: {},
   mull: {},
+  markiseost: {},
+  markisewest: {},
 };
 
 async function loadSvg(path) {
