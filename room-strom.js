@@ -11,7 +11,7 @@ function powerMode(hass) {
   const pv = hass.states["sensor.goodwe_pv_power"].state;
   const bat = hass.states["sensor.goodwe_battery_power"].state;
   const grid = hass.states["sensor.goodwe_active_power"].state;
-  if (grid > 100) {
+  if (grid < -100) {
     return "grid";
   } else if (bat > 0) {
     return "bat";
@@ -235,6 +235,7 @@ export class Stromnutzung extends Room {
           name: "Netz",
           fill: "tozeroy",
           line: { width: 1 },
+          filters: [{ map_y_numbers: "-y" }],
         },
         {
           entity: "sensor.goodwe_house_consumption",
