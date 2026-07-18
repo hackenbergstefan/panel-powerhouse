@@ -256,7 +256,7 @@ class TabletPanel extends LitElement {
             .hass=${this.hass}
             id="${id}"
             class="pulse-glow"
-          ></room-climate>`
+          ></room-climate>`,
       ),
       html`<room-heizung
         .panel=${this}
@@ -275,11 +275,12 @@ class TabletPanel extends LitElement {
         id="gewachshaus"
       ></room-gewachshaus>`,
       ...["garage", "ost", "west"].map(
-        (id) => html`<room-pvbar
-          .panel=${this}
-          .hass=${this.hass}
-          id="pv${id}"
-        ></room-pvbar>`
+        (id) =>
+          html`<room-pvbar
+            .panel=${this}
+            .hass=${this.hass}
+            id="pv${id}"
+          ></room-pvbar>`,
       ),
       html`<room-eingang
         .panel=${this}

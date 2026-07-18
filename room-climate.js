@@ -11,7 +11,7 @@ const climateEntities = {
   ogbad: {
     climate: "climate.hmip_sthd_000ea0c9999128",
     valve: "number.hmip_falmot_c12_001ba2699cca62_level_ch1",
-    window: "binary_sensor.bthome_sensor_9bbe_window",
+    window: "bthome_sensor_9bbe",
   },
   ogschlafzimmer: {
     climate: "climate.hmip_sthd_000ea0c9999117",
@@ -20,7 +20,7 @@ const climateEntities = {
   ogkind1: {
     climate: "climate.hmip_sthd_000ea0c9999126",
     valve: "number.hmip_falmot_c12_001ba2699cca62_level_ch2",
-    window: "binary_sensor.bthome_sensor_5998_window"
+    window: "bthome_sensor_5998",
   },
   ogkind2: {
     climate: "climate.hmip_sthd_000ea0c999910a",
@@ -29,12 +29,12 @@ const climateEntities = {
   egbad: {
     climate: "climate.hmip_sthd_000e9be99677bf",
     valve: "number.hmip_falmot_c12_001b9be9a04a8c_level_ch2",
-    window: "binary_sensor.fenster_eg_bad_window",
+    window: "fenster_eg_bad",
   },
   egwohnzimmer: {
     climate: "climate.hmip_sthd_000e9be9967543",
     valve: "number.hmip_falmot_c12_001b9be9a04a8c_level_ch6",
-    window: "binary_sensor.bthome_sensor_67af_window",
+    window: "bthome_sensor_67af",
   },
   egkuche: {
     climate: "climate.hmip_sthd_000e9be9967564",
@@ -48,7 +48,7 @@ const climateEntities = {
   egburo: {
     climate: "climate.hmip_sthd_000e9be9967562",
     valve: "number.hmip_falmot_c12_001b9be9a04a8c_level_ch3",
-    window: "binary_sensor.fenster_eg_buro_window",
+    window: "fenster_eg_buro",
   },
   ughobby: {
     climate: "climate.hmip_sthd_000ea0c9999105",
@@ -144,14 +144,7 @@ export class Climate extends Room {
       climateEntities[this.id].window
         ? html`
             <div class="room-window-container" id="${this.id}-window">
-              <ha-icon
-                class="icon-window-closed"
-                icon="mdi:window-closed-variant"
-              ></ha-icon>
-              <ha-icon
-                class="icon-window-opened"
-                icon="mdi:window-open-variant"
-              ></ha-icon>
+              <div></div>
             </div>
           `
         : html``,
@@ -163,12 +156,27 @@ export class Climate extends Room {
 
   static get styles() {
     return css`
+      .icon-window-tilted {
+        mask-image: url("local/powerhouse/window-tilted.svg");
+        background-size: contain;
+        width: 100%;
+        height: 100%;
+        background: var(--aurora-yellow);
+      }
       .icon-window-opened {
-        color: var(--aurora-red);
+        mask-image: url("local/powerhouse/window-opened.svg");
+        background-size: contain;
+        width: 100%;
+        height: 100%;
+        background: var(--aurora-red);
         animation: blink 1s infinite alternate;
       }
       .icon-window-closed {
-        color: var(--polar-light-gray);
+        mask-image: url("local/powerhouse/window-closed.svg");
+        background-size: contain;
+        width: 100%;
+        height: 100%;
+        background: var(--polar-light-gray);
       }
       .room-window-container {
         position: absolute;
@@ -230,13 +238,19 @@ export class Climate extends Room {
     // Window
     if (climateEntities[this.id].window) {
       const windowState =
-        this.hass.states[climateEntities[this.id].window].state;
-      this.renderRoot
-        .querySelector(".icon-window-opened")
-        .classList.toggle("hidden", windowState !== "on");
-      this.renderRoot
-        .querySelector(".icon-window-closed")
-        .classList.toggle("hidden", windowState === "on");
+        this.hass.states[
+          `binary_sensor.${climateEntities[this.id].window}_window`
+        ].state;
+      const tilted =
+        this.hass.states[`sensor.${climateEntities[this.id].window}_rotation`]
+          .state > 3;
+      this.renderRoot.querySelector(
+        `#${this.id}-window`
+      ).firstElementChild.classList = tilted
+        ? "icon-window-tilted"
+        : windowState == "on"
+        ? "icon-window-opened"
+        : "icon-window-closed";
     }
   }
 }
