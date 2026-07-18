@@ -23,6 +23,8 @@ import "./room-clock.js";
 import "./room-mull.js";
 import { Garage } from "./room-garage.js";
 import { Ugburo } from "./room-ugburo.js";
+import { StromHausAnimation, StromNow } from "./room-strom.js";
+import "./room-awning.js";
 
 class TabletPanel extends LitElement {
   static get properties() {
@@ -48,12 +50,14 @@ class TabletPanel extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
+    console.log("connected");
+
     const viewport = document.head.querySelector('meta[name="viewport"]');
     const innerWidth = window.innerWidth;
     const meta = `width=device-width, initial-scale=${
-      innerWidth / 2000
+      innerWidth / 2400
     }, minimum-scale=${
-      innerWidth / 2000
+      innerWidth / 2400
     }, maximum-scale=0.75, user-scalable=no`;
     if (viewport) {
       viewport.setAttribute("content", meta);
@@ -67,8 +71,7 @@ class TabletPanel extends LitElement {
       .querySelector("home-assistant")
       .shadowRoot.querySelector("home-assistant-main")
       .shadowRoot.querySelector("ha-drawer")
-      .shadowRoot.querySelector("aside")
-      .setAttribute("style", "display:none");
+      .setAttribute("style", "--ha-sidebar-width: 0");
   }
 
   static get cssContainers() {
@@ -218,10 +221,13 @@ class TabletPanel extends LitElement {
       Wetterstation.styles,
       Garage.styles,
       Ugburo.styles,
+      StromNow.styles,
+      StromHausAnimation.styles,
     ];
   }
   render() {
     const bg = html`<house-background
+      svgpath="local/powerhouse/bgimage.svg"
       @background-ready=${() => {
         this._backgroundReady = true;
       }}
@@ -250,7 +256,7 @@ class TabletPanel extends LitElement {
             .hass=${this.hass}
             id="${id}"
             class="pulse-glow"
-          ></room-climate>`
+          ></room-climate>`,
       ),
       html`<room-heizung
         .panel=${this}
@@ -269,11 +275,12 @@ class TabletPanel extends LitElement {
         id="gewachshaus"
       ></room-gewachshaus>`,
       ...["garage", "ost", "west"].map(
-        (id) => html`<room-pvbar
-          .panel=${this}
-          .hass=${this.hass}
-          id="pv${id}"
-        ></room-pvbar>`
+        (id) =>
+          html`<room-pvbar
+            .panel=${this}
+            .hass=${this.hass}
+            id="pv${id}"
+          ></room-pvbar>`,
       ),
       html`<room-eingang
         .panel=${this}
@@ -351,6 +358,30 @@ class TabletPanel extends LitElement {
         .hass=${this.hass}
         id="garage"
       ></room-garage>`,
+      html`<room-strom-haus-animation
+        .panel=${this}
+        .hass=${this.hass}
+        .haus=${this.renderRoot.querySelector("#haus").cloneNode(true)}
+      ></room-strom-haus-animation>`,
+      html`<room-awning
+        .panel=${this}
+        .hass=${this.hass}
+        .icon=${this.renderRoot.querySelector("#markise").cloneNode(true)}
+        id="markiseost"
+        awning="ost"
+      ></room-awning>`,
+      html`<room-awning
+        .panel=${this}
+        .hass=${this.hass}
+        .icon=${this.renderRoot.querySelector("#markise").cloneNode(true)}
+        id="markisewest"
+        awning="west"
+      ></room-awning>`,
+      html`<room-pv-today
+        .panel=${this}
+        .hass=${this.hass}
+        id="pvtoday"
+      ></room-pv-today>`,
     ];
   }
 }

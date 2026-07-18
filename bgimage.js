@@ -40,6 +40,7 @@ export const IDS = {
   mull: {},
   markiseost: {},
   markisewest: {},
+  pvtoday: {},
 };
 
 async function loadSvg(path) {
@@ -63,10 +64,10 @@ export class HouseBackground extends LitElement {
       house-background svg {
         z-index: -99;
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: var(--svg-top, 0);
+        left: var(--svg-left, 0);
+        width: var(--svg-width, 100%);
+        height: var(--svg-height, 100%);
       }
       .svg-room {
         stroke: black;
@@ -104,7 +105,7 @@ export class HouseBackground extends LitElement {
     this.dispatchEvent(
       new CustomEvent("background-ready", {
         bubbles: true,
-      })
+      }),
     );
   }
 
@@ -112,6 +113,15 @@ export class HouseBackground extends LitElement {
     const viewBox = this.svg.attributes.viewBox;
     const [_x, _y, svgWidth, svgHeight] = viewBox.value.split(" ");
     const margin = 5;
+    let bgwidth = window.innerWidth;
+    let bgheight = (svgHeight / svgWidth) * bgwidth;
+    if (window.innerHeight < window.innerWidth) {
+      bgheight = window.innerHeight;
+      bgwidth = (svgWidth / svgHeight) * bgheight;
+      console.log(bgwidth, bgheight);
+    }
+    this.renderRoot.style.setProperty("--svg-height", `${bgheight}px`);
+    this.renderRoot.style.setProperty("--svg-width", `${bgwidth}px`);
 
     for (const id in IDS) {
       const room = this.svg.querySelector(`#${id}`);
@@ -120,26 +130,22 @@ export class HouseBackground extends LitElement {
         room.setAttribute("y", parseFloat(room.attributes.y.value) + margin);
         room.setAttribute(
           "width",
-          parseFloat(room.attributes.width.value) - 2 * margin
+          parseFloat(room.attributes.width.value) - 2 * margin,
         );
         room.setAttribute(
           "height",
-          parseFloat(room.attributes.height.value) - 2 * margin
+          parseFloat(room.attributes.height.value) - 2 * margin,
         );
       }
       room.classList = "svg-room";
 
       // Set positions and sizes
-      IDS[id].x =
-        (parseFloat(room.attributes.x?.value) / svgWidth) * window.innerWidth;
-      IDS[id].y =
-        (parseFloat(room.attributes.y?.value) / svgHeight) * window.innerHeight;
+      IDS[id].x = (parseFloat(room.attributes.x?.value) / svgWidth) * bgwidth;
+      IDS[id].y = (parseFloat(room.attributes.y?.value) / svgHeight) * bgheight;
       IDS[id].w =
-        (parseFloat(room.attributes.width.value) / svgWidth) *
-        window.innerWidth;
+        (parseFloat(room.attributes.width.value) / svgWidth) * bgwidth;
       IDS[id].h =
-        (parseFloat(room.attributes.height.value) / svgHeight) *
-        window.innerHeight;
+        (parseFloat(room.attributes.height.value) / svgHeight) * bgheight;
     }
   }
 
