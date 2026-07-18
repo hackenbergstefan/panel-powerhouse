@@ -171,7 +171,7 @@ export class Stromverteilung2 extends Room {
           {
             text: `$fn ({hass}) =>
               "<span style='font-size: 40px; font-weight: 700;'>"
-              + Number(hass.states['sensor.goodwe_today_load'].state).toFixed(1) 
+              + Number(hass.states['sensor.goodwe_today_load'].state).toFixed(1)
               + "</span><br><span style='font-size: 10px;'>kWh</span>"`,
             xref: "paper",
             yref: "paper",
@@ -402,11 +402,11 @@ export class StromNow extends Room {
     this.renderRoot.style.setProperty("--power-color", color);
     this.renderRoot.style.setProperty(
       "--power-color-transparent",
-      colorTransparent
+      colorTransparent,
     );
     this.renderRoot.style.setProperty(
       "--power-animation-duration",
-      `${15 - power / 1000}s`
+      `${15 - power / 1000}s`,
     );
   }
 }
@@ -439,7 +439,7 @@ export class StromTotalNow extends Room {
 
     const config = StromTotalNow.mapping[this.id];
     this._updateEntities = [`sensor.${config.entityNow}`].concat(
-      config.entityMax ? [`sensor.${config.entityMax}`] : []
+      config.entityMax ? [`sensor.${config.entityMax}`] : [],
     );
   }
 
@@ -476,7 +476,7 @@ export class StromTotalNow extends Room {
       `#${this.id} div span`,
       this.hass.states[`sensor.${StromTotalNow.mapping[this.id].entityNow}`]
         .state,
-      { decimal: 0 }
+      { decimal: 0 },
     );
 
     if (StromTotalNow.mapping[this.id].entityMax) {
@@ -485,7 +485,7 @@ export class StromTotalNow extends Room {
         this.querySelectorAll(`#${this.id}-max span`)[1],
         this.hass.states[`sensor.${StromTotalNow.mapping[this.id].entityMax}`]
           .state,
-        { decimal: 0 }
+        { decimal: 0 },
       );
     } else {
       this.renderRoot
@@ -555,7 +555,9 @@ export class StromHausAnimation extends Room {
 
   render() {
     return html`<svg>
-      <defs><mask id="haus-mask">${this.haus}</mask></defs>
+      <defs>
+        <mask id="haus-mask">${this.haus}</mask>
+      </defs>
     </svg>`;
   }
 
@@ -571,9 +573,66 @@ export class StromHausAnimation extends Room {
 
     this.renderRoot.style.setProperty(
       "--strom-haus-animation-direction",
-      direction
+      direction,
     );
     this.renderRoot.style.setProperty("--strom-haus-color", `var(--${color})`);
   }
 }
 customElements.define("room-strom-haus-animation", StromHausAnimation);
+
+export class PVToday extends Room {
+  render() {
+    return html`<div
+      style="
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        --mdc-icon-size: 30px;
+      "
+    >
+      <ha-icon icon="mdi:solar-power"></ha-icon>
+      <div class="big" style="margin-left: 10px;">
+        <span id="pvtoday-generation"></span>
+        <span class="unit">kWh</span>
+      </div>
+      <ha-icon
+        icon="mdi:transmission-tower-import"
+        style="margin-left: 50px;"
+      ></ha-icon>
+      <div class="big" style="margin-left: 10px;">
+        <span id="pvtoday-export"></span>
+        <span class="unit">kWh</span>
+      </div>
+    </div>`;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._updateEntities = [
+      "sensor.goodwe_today_s_pv_generation",
+      "sensor.goodwe_today_energy_export",
+    ];
+  }
+
+  updated() {
+    super.updated();
+
+    setInnerNumeric(
+      this.renderRoot,
+      `#pvtoday-generation`,
+      this.hass.states["sensor.goodwe_today_s_pv_generation"].state,
+      { decimal: 0 },
+    );
+    setInnerNumeric(
+      this.renderRoot,
+      `#pvtoday-export`,
+      this.hass.states["sensor.goodwe_today_energy_export"].state,
+      { decimal: 0 },
+    );
+  }
+}
+
+customElements.define("room-pv-today", PVToday);
