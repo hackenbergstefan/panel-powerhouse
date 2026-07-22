@@ -133,14 +133,7 @@ export class Ugburo extends Room {
         </svg>
       </div>
       <div class="room-window-container" id="${this.id}-window">
-        <ha-icon
-          class="icon-window-closed"
-          icon="mdi:window-closed-variant"
-        ></ha-icon>
-        <ha-icon
-          class="icon-window-opened"
-          icon="mdi:window-open-variant"
-        ></ha-icon>
+        <div></div>
       </div>
     `;
   }
@@ -162,12 +155,15 @@ export class Ugburo extends Room {
 
     const windowState =
       this.hass.states["binary_sensor.bthome_sensor_2272_window"].state;
-    this.renderRoot
-      .querySelector(".icon-window-opened")
-      .classList.toggle("hidden", windowState !== "on");
-    this.renderRoot
-      .querySelector(".icon-window-closed")
-      .classList.toggle("hidden", windowState === "on");
+    const tilted =
+      this.hass.states["sensor.bthome_sensor_2272_rotation"].state > 3;
+    this.renderRoot.querySelector(
+      `#${this.id}-window`
+    ).firstElementChild.classList = tilted
+      ? "icon-window-tilted"
+      : windowState == "on"
+      ? "icon-window-opened"
+      : "icon-window-closed";
   }
 }
 customElements.define("room-ugburo", Ugburo);

@@ -159,9 +159,12 @@ export class Climate extends Room {
       .icon-window-tilted {
         mask-image: url("local/powerhouse/window-tilted.svg");
         background-size: contain;
-        width: 100%;
-        height: 100%;
         background: var(--aurora-yellow);
+        position: absolute;
+        width: 80%;
+        height: 80%;
+        left: 10%;
+        top: 10%;
       }
       .icon-window-opened {
         mask-image: url("local/powerhouse/window-opened.svg");
