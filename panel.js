@@ -154,6 +154,10 @@ class TabletPanel extends LitElement {
         margin-top: 1px;
         vertical-align: super;
       }
+
+      .red {
+        color: var(--aurura-red);
+      }
     `;
   }
 

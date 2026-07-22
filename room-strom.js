@@ -431,6 +431,7 @@ export class StromTotalNow extends Room {
       icon: "mdi:solar-power-variant",
       entityNow: "goodwe_pv_power",
       entityMax: "pv_power_max_taglich",
+      entityTotal: "goodwe_today_s_pv_generation",
     },
   };
 
@@ -438,9 +439,10 @@ export class StromTotalNow extends Room {
     super.connectedCallback();
 
     const config = StromTotalNow.mapping[this.id];
-    this._updateEntities = [`sensor.${config.entityNow}`].concat(
-      config.entityMax ? [`sensor.${config.entityMax}`] : [],
-    );
+    this._updateEntities = [
+      `sensor.${config.entityNow}`,
+      `sensor.${config.entityTotal}`,
+    ].concat(config.entityMax ? [`sensor.${config.entityMax}`] : []);
   }
 
   render() {
@@ -450,19 +452,30 @@ export class StromTotalNow extends Room {
         style="
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: top;
           font-size: 2em;
           ${StromTotalNow.mapping[this.id].style}
       "
       >
         <ha-icon
-          style="--mdc-icon-size: 30px;"
+          style="--mdc-icon-size: 30px; margin-top: 80px;"
           icon="${StromTotalNow.mapping[this.id].icon}"
         ></ha-icon>
         <div><span></span><span class="unit">W</span></div>
         <div id="${this.id}-max" style="font-size: 0.5em;">
           <span>max</span>
           <span></span><span class="unit">W</span>
+        </div>
+        <div id="${this.id}-total" style="margin-top: auto">
+          <div
+            style="
+            display: inline; 
+            font-size: 50%; 
+            margin-right: -3px"
+          >
+            Σ
+          </div>
+          <span></span><span class="unit">kWh</span>
         </div>
       </div>
     `;
@@ -490,6 +503,19 @@ export class StromTotalNow extends Room {
     } else {
       this.renderRoot
         .querySelectorAll(`#${this.id} div`)[2]
+        .classList.add("hidden");
+    }
+    if (StromTotalNow.mapping[this.id].entityTotal) {
+      setInnerNumeric(
+        this.renderRoot,
+        this.querySelector(`#${this.id}-total span`),
+        this.hass.states[`sensor.${StromTotalNow.mapping[this.id].entityTotal}`]
+          .state,
+        { decimal: 0 }
+      );
+    } else {
+      this.renderRoot
+        .querySelector(`#${this.id}-total`)
         .classList.add("hidden");
     }
   }
@@ -593,9 +619,9 @@ export class PVToday extends Room {
         --mdc-icon-size: 30px;
       "
     >
-      <ha-icon icon="mdi:solar-power"></ha-icon>
+      <ha-icon icon="mdi:transmission-tower-export"></ha-icon>
       <div class="big" style="margin-left: 10px;">
-        <span id="pvtoday-generation"></span>
+        <span id="pvtoday-import"></span>
         <span class="unit">kWh</span>
       </div>
       <ha-icon
@@ -612,25 +638,28 @@ export class PVToday extends Room {
   connectedCallback() {
     super.connectedCallback();
     this._updateEntities = [
-      "sensor.goodwe_today_s_pv_generation",
-      "sensor.goodwe_today_energy_export",
+      "sensor.goodwe_meter_today_energy_import",
+      "sensor.goodwe_meter_today_energy_export",
     ];
   }
 
   updated() {
     super.updated();
 
-    setInnerNumeric(
-      this.renderRoot,
-      `#pvtoday-generation`,
-      this.hass.states["sensor.goodwe_today_s_pv_generation"].state,
-      { decimal: 0 },
-    );
+    const energyImport =
+      this.hass.states["sensor.goodwe_meter_today_energy_import"].state;
+    this.renderRoot
+      .querySelector("#pvtoday-import")
+      .classList.toggle("red", energyImport > 10);
+
+    setInnerNumeric(this.renderRoot, `#pvtoday-import`, energyImport, {
+      decimal: 0,
+    });
     setInnerNumeric(
       this.renderRoot,
       `#pvtoday-export`,
-      this.hass.states["sensor.goodwe_today_energy_export"].state,
-      { decimal: 0 },
+      this.hass.states["sensor.goodwe_meter_today_energy_export"].state,
+      { decimal: 0 }
     );
   }
 }
