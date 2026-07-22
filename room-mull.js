@@ -99,6 +99,7 @@ export class Mull extends Room {
     }
     return html`<ha-icon
       style="
+        stroke: white;
         position: absolute;
         --mdc-icon-size: 80px;
         bottom: 0;
