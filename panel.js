@@ -268,11 +268,6 @@ class TabletPanel extends LitElement {
         id="heizung"
         class="pulse-glow-yellow"
       ></room-heizung>`,
-      html`<room-heizungboiler
-        .panel=${this}
-        .hass=${this.hass}
-        id="heizungboiler"
-      ></room-heizungboiler>`,
       html`<room-gewachshaus
         .panel=${this}
         .hass=${this.hass}

@@ -28,7 +28,7 @@ export class HeizungRoom extends Room {
             <span class="unit">W</span>
           </div>
         </div>
-        <div class="icon-label">
+        <div class="icon-label big">
           <ha-icon icon="mdi:water-boiler"></ha-icon>
           <div id="${this.id}-speicherist">
             <span></span>
