@@ -74,6 +74,13 @@ export class Ugburo extends Room {
           offset-distance: 100%;
         }
       }
+
+      #printing-image {
+        width: 100%;
+        bottom: 0;
+        position: absolute;
+        z-index: 0;
+      }
     `;
   }
 
@@ -82,6 +89,32 @@ export class Ugburo extends Room {
     if (!this._cards) {
       return html``;
     }
+
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src =
+      this.hass.states["camera.schichtwerk_vorschau"].attributes.entity_picture;
+
+    img.onload = () => {
+      const canvas = this.renderRoot.querySelector("#printing-image");
+      const ctx = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        // Remove all which is not orange or gray/white
+        if ((r < 100 && g < 100) || (r < 200 && r == g && g == b)) {
+          data[i + 3] = 0;
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+    };
+
     return html`
       <div class="room-container-inner">
         <div class="icon-label">
@@ -131,6 +164,7 @@ export class Ugburo extends Room {
             d="M-469,344.7h10v6h2v5h-2.5l-3.5,4h-2l-3.5-4h-2.5v-5h2V344.7"
           />
         </svg>
+        <canvas id="printing-image"></canvas>
       </div>
       <div class="room-window-container" id="${this.id}-window">
         <div></div>
@@ -149,9 +183,10 @@ export class Ugburo extends Room {
       this.hass.states["sensor.schichtwerk_material"].state;
 
     const progress = this.renderRoot.querySelector(`#${this.id}-progress`);
-    progress.classList.toggle("hidden", !printing);
-    progress.querySelector("span").innerHTML =
+    const progressState =
       this.hass.states["sensor.schichtwerk_fortschritt"].state;
+    progress.classList.toggle("hidden", progressState == "not available");
+    progress.querySelector("span").innerHTML = progressState;
 
     const windowState =
       this.hass.states["binary_sensor.bthome_sensor_2272_window"].state;
