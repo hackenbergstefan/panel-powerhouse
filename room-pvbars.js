@@ -61,7 +61,7 @@ export class PvBar extends Room {
     this.renderRoot.querySelector(
       ".pvbar-overlay"
     ).style.backgroundColor = `rgba(235, 203, 139, ${power / 1000})`;
-    const sparks = Math.round((power / 1e4) ** 1.5 * this.clientWidth * 5);
+    const sparks = Math.round((power / 1e4) ** 1.4 * this.clientWidth);
     this.renderRoot.querySelector("spark-bar").setAttribute("sparks", sparks);
     setInnerNumeric(this.renderRoot, "span", power);
   }
