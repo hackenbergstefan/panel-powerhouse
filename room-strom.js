@@ -614,9 +614,10 @@ export class PVToday extends Room {
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        width: 100%;
+        width: 110%;
         height: 100%;
-        --mdc-icon-size: 30px;
+        --mdc-icon-size: 25px;
+        font-size: 0.85em;
       "
     >
       <ha-icon icon="mdi:transmission-tower-export"></ha-icon>
@@ -626,11 +627,15 @@ export class PVToday extends Room {
       </div>
       <ha-icon
         icon="mdi:transmission-tower-import"
-        style="margin-left: 50px;"
+        style="margin-left: 40px;"
       ></ha-icon>
       <div class="big" style="margin-left: 10px;">
         <span id="pvtoday-export"></span>
         <span class="unit">kWh</span>
+      </div>
+      <div class="big" style="margin-left: 10px;">
+        <span id="pvtoday-export-euro"></span>
+        <span class="unit">€</span>
       </div>
     </div>`;
   }
@@ -652,14 +657,16 @@ export class PVToday extends Room {
       .querySelector("#pvtoday-import")
       .classList.toggle("red", energyImport > 10);
 
-    setInnerNumeric(this.renderRoot, `#pvtoday-import`, energyImport, {
-      decimal: 0,
-    });
+    setInnerNumeric(this.renderRoot, `#pvtoday-import`, energyImport, 0);
+
+    const energyExport =
+      this.hass.states["sensor.goodwe_meter_today_energy_export"].state;
+    setInnerNumeric(this.renderRoot, "#pvtoday-export", energyExport, 0);
     setInnerNumeric(
       this.renderRoot,
-      `#pvtoday-export`,
-      this.hass.states["sensor.goodwe_meter_today_energy_export"].state,
-      { decimal: 0 }
+      "#pvtoday-export-euro",
+      energyExport * 0.0673,
+      2
     );
   }
 }
