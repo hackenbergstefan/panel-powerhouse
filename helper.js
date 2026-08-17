@@ -27,3 +27,16 @@ export function currentDayJs() {
 
   return [start, end];
 }
+
+export function prettyDuration(duration) {
+  duration /= 1000;
+  const hrs = duration / (60 * 60);
+  if (hrs > 1) {
+    return [hrs.toFixed(1), "h"];
+  }
+  const mins = duration / 60;
+  if (mins > 1) {
+    return [mins.toFixed(0), "min"];
+  }
+  return [duration, "s"];
+}

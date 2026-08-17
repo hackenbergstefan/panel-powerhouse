@@ -3,6 +3,7 @@ import {
   css,
 } from "https://unpkg.com/lit-element@3/lit-element.js?module";
 import { Room } from "./room.js";
+import { prettyDuration } from "./helper.js";
 
 export class Ugburo extends Room {
   connectedCallback() {
@@ -79,7 +80,7 @@ export class Ugburo extends Room {
         width: 100%;
         bottom: 0;
         position: absolute;
-        z-index: 0;
+        z-index: -1;
       }
     `;
   }
@@ -125,7 +126,6 @@ export class Ugburo extends Room {
           <ha-icon icon="mdi:progress-clock"></ha-icon>
           <div>
             <span></span>
-            <span class="unit">%</span>
           </div>
         </div>
         <div
@@ -184,21 +184,22 @@ export class Ugburo extends Room {
 
     const progress = this.renderRoot.querySelector(`#${this.id}-progress`);
     const progressState =
-      this.hass.states["sensor.schichtwerk_fortschritt"].state;
-    progress.classList.toggle("hidden", progressState == "not available");
-    progress.querySelector("span").innerHTML = progressState;
+      this.hass.states["sensor.schichtwerk_druck_fertig"].state;
+    progress.classList.toggle("hidden", progressState == "unavailable");
+    const doneIn = prettyDuration(new Date(progressState) - new Date());
+    progress.querySelector("span").innerHTML = `${doneIn[0]} ${doneIn[1]}`;
 
     const windowState =
       this.hass.states["binary_sensor.bthome_sensor_2272_window"].state;
     const tilted =
       this.hass.states["sensor.bthome_sensor_2272_rotation"].state > 3;
     this.renderRoot.querySelector(
-      `#${this.id}-window`
+      `#${this.id}-window`,
     ).firstElementChild.classList = tilted
       ? "icon-window-tilted"
       : windowState == "on"
-      ? "icon-window-opened"
-      : "icon-window-closed";
+        ? "icon-window-opened"
+        : "icon-window-closed";
   }
 }
 customElements.define("room-ugburo", Ugburo);

@@ -469,8 +469,8 @@ export class StromTotalNow extends Room {
         <div id="${this.id}-total" style="margin-top: auto">
           <div
             style="
-            display: inline; 
-            font-size: 50%; 
+            display: inline;
+            font-size: 50%;
             margin-right: -3px"
           >
             Σ
