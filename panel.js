@@ -36,6 +36,8 @@ class TabletPanel extends LitElement {
   constructor() {
     super();
     this._backgroundReady = false;
+    this._pollInterval = 30000;
+    this._pollTimer = null;
   }
 
   static get properties() {
@@ -72,6 +74,24 @@ class TabletPanel extends LitElement {
       .shadowRoot.querySelector("home-assistant-main")
       .shadowRoot.querySelector("ha-drawer")
       .setAttribute("style", "--ha-sidebar-width: 0");
+
+    this._setupPolling();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._pollTimer) {
+      clearInterval(this._pollTimer);
+      this._pollTimer = null;
+    }
+  }
+
+  _setupPolling() {
+    if (this._pollTimer) clearInterval(this._pollTimer);
+    this._pollTimer = setInterval(() => {
+      const now = Date.now();
+      this.requestUpdate();
+    }, this._pollInterval);
   }
 
   static get cssContainers() {

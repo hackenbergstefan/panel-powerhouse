@@ -67,9 +67,17 @@ export class Room extends LitElement {
       console.warn("Not all strings: ", this, this._updateEntities);
     }
 
-    return this._updateEntities.some(
-      (entity) => this.hass.states[entity] !== oldHass.states[entity]
-    );
+    return this._updateEntities.some((entity) => {
+      const oldState = oldHass?.states?.[entity];
+      const newState = this.hass?.states?.[entity];
+      if (!oldState || !newState) return !!newState || !!oldState;
+
+      return (
+        oldState.state !== newState.state ||
+        JSON.stringify(oldState.attributes) !==
+          JSON.stringify(newState.attributes)
+      );
+    });
   }
 
   render() {
