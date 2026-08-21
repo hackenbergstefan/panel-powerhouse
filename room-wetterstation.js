@@ -28,21 +28,10 @@ export class Wetterstation extends Room {
       type: "custom:plotly-graph",
       entities: [
         {
-          entity: "sensor.hmip_swo_pl_00181d89a75413_luftfeuchtigkeit",
-          fill: "tozeroy",
-          line: { width: 1, color: "#81a1c1" },
-        },
-        {
           entity: "sensor.hmip_swo_pl_00181d89a75413_temperatur",
           fill: "tozeroy",
           line: { width: 2, color: "#8fbcbb" },
           yaxis: "y2",
-        },
-        {
-          entity: "sensor.hmip_swo_pl_00181d89a75413_beleuchtungsstarke",
-          fill: "tozeroy",
-          line: { width: 2, color: "#d8dee9" },
-          yaxis: "y3",
         },
       ],
       hours_to_show: "current_day",
@@ -199,18 +188,18 @@ export class Wetterstation extends Room {
       setInnerNumeric(
         this.renderRoot,
         `#${this.id}-${id} span`,
-        this.hass.states[`sensor.hmip_swo_pl_00181d89a75413_${entity}`].state
-      )
+        this.hass.states[`sensor.hmip_swo_pl_00181d89a75413_${entity}`].state,
+      ),
     );
     setInnerNumeric(
       this.renderRoot,
       `#${this.id}-temp-max span`,
-      this.hass.states["sensor.wettersensor_temperatur_max_taglich"].state
+      this.hass.states["sensor.wettersensor_temperatur_max_taglich"].state,
     );
     setInnerNumeric(
       this.renderRoot,
       `#${this.id}-temp-min span`,
-      this.hass.states["sensor.wettersensor_temperatur_min_taglich"].state
+      this.hass.states["sensor.wettersensor_temperatur_min_taglich"].state,
     );
   }
 }
