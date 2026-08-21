@@ -350,11 +350,11 @@ export class StromNow extends Room {
   }
 
   render() {
-    const additionalStyle = {
-      stromug: "",
-      stromeg: "",
-      stromog: "",
-      stromgarage: "justify-content: center;",
+    const [flipped, additionalStyle] = {
+      stromug: [false, ""],
+      stromeg: [false, ""],
+      stromog: [false, ""],
+      stromgarage: [true, ""],
     }[this.id];
     return html`
       <div
@@ -369,10 +369,11 @@ export class StromNow extends Room {
           border-image: linear-gradient(to right, transparent, var(--power-color) 30% 70%, transparent) 1;
           border-width: 4px 0 4px 0;
           border-style: solid;
+          ${flipped ? "justify-content: flex-end;" : "justify-content: flex-start;"}
           ${additionalStyle}
         "
       >
-        <div class="flow-chevron"></div>
+        ${!flipped ? html`<div class="flow-chevron"></div>` : ""}
         <div
           class="big"
           style="
@@ -382,6 +383,7 @@ export class StromNow extends Room {
           <span></span>
           <span class="unit" style="margin-left:-5px">W</span>
         </div>
+        ${flipped ? html`<div style="transform: scaleX(-1);"><div class="flow-chevron"></div></div>` : ""}
       </div>
     `;
   }

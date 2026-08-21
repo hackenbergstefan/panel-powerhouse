@@ -4,6 +4,8 @@ import {
 } from "https://unpkg.com/lit-element@3/lit-element.js?module";
 import { Room } from "./room.js";
 
+const helpers = await window.loadCardHelpers();
+
 export class Garage extends Room {
   connectedCallback() {
     super.connectedCallback();
@@ -21,6 +23,24 @@ export class Garage extends Room {
     this.hass.callService("button", "press", {
       entity_id: `button.${btn}`,
     });
+  }
+
+  async firstUpdated() {
+    super.firstUpdated();
+
+    const card = await helpers.createCardElement({
+      type: "button",
+      entity: "switch.shelly_mini_garage_licht",
+      icon: "mdi:lightbulb",
+      show_state: false,
+      show_name: false,
+      card_mod: {
+        style: ":host ha-state-icon {width: 100%; height: 100%;}",
+      },
+    });
+    card.hass = this.hass;
+    this._cards["card"] = card;
+    await this.requestUpdate();
   }
 
   static get styles() {
@@ -48,6 +68,16 @@ export class Garage extends Room {
       <div class="garage-blade"></div>
       <div class="garage-blade"></div>
       <div class="garage-blade"></div>
+      <div
+        style="
+          position: absolute;
+          top: 0;
+          left: -40px;
+          width: 25px;
+        "
+      >
+        ${this._cards["card"]}
+      </div>
     `;
   }
 
