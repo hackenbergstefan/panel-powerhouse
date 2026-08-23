@@ -42,6 +42,7 @@ export const IDS = {
   markisewest: {},
   pvtoday: {},
   car: {},
+  lawnmower: {},
 };
 
 async function loadSvg(path) {

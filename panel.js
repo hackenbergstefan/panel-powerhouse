@@ -26,6 +26,7 @@ import { Ugburo } from "./room-ugburo.js";
 import { StromHausAnimation, StromNow } from "./room-strom.js";
 import "./room-awning.js";
 import { Car } from "./room-car.js";
+import { Lawnmower } from "./room-lawnmower.js";
 
 class TabletPanel extends LitElement {
   static get properties() {
@@ -249,6 +250,7 @@ class TabletPanel extends LitElement {
       StromNow.styles,
       StromHausAnimation.styles,
       Car.styles,
+      Lawnmower.styles,
     ];
   }
   render() {
@@ -404,6 +406,11 @@ class TabletPanel extends LitElement {
         id="pvtoday"
       ></room-pv-today>`,
       html`<room-car .panel=${this} .hass=${this.hass} id="car"></room-car>`,
+      html`<room-lawnmower
+        .panel=${this}
+        .hass=${this.hass}
+        id="lawnmower"
+      ></room-lawnmower>`,
     ];
   }
 }
