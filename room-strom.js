@@ -11,7 +11,7 @@ function powerMode(hass) {
   const pv = hass.states["sensor.goodwe_pv_power"].state;
   const bat = hass.states["sensor.goodwe_battery_power"].state;
   const grid = hass.states["sensor.goodwe_active_power"].state;
-  if (grid < -100) {
+  if (grid < -200) {
     return "grid";
   } else if (bat > 0) {
     return "bat";
@@ -27,7 +27,7 @@ export class Stromverteilung extends Room {
 
     const card = await helpers.createCardElement({
       type: "custom:plotly-graph",
-      color_scheme: ["#d08770", "#88c0d0", "#a3be8c", "#b48ead", "#8fbcbb"],
+      color_scheme: ["#d08770", "#88c0d0", "#8185c1", "#b48ead", "#8fbcbb", "#a3be8c"],
       entities: [
         {
           entity: "sensor.shelly_heizung_total_active_power",
@@ -50,7 +50,12 @@ export class Stromverteilung extends Room {
           line: { width: 2 },
         },
         {
-          entity: "sensor.shelly_garage_total_active_power",
+          entity: "sensor.shelly_garage_w_o_wallbox",
+          fill: "tozeroy",
+          line: { width: 2 },
+        },
+        {
+          entity: "sensor.wallbox_ladeleistung",
           fill: "tozeroy",
           line: { width: 2 },
         },
@@ -128,15 +133,16 @@ export class Stromverteilung2 extends Room {
             "$ex Number(hass.states['sensor.stromverbrauch_eg_taglich'].state) / 1000",
             "$ex Number(hass.states['sensor.stromverbrauch_og_taglich_2'].state) / 1000",
             "$ex Number(hass.states['sensor.stromverbrauch_garage_taglich'].state) / 1000",
+            "$ex Number(hass.states['sensor.wallbox_energie_taglich'].state)",
           ],
-          labels: ["Heizung", "Keller", "EG", "OG", "Garage"],
+          labels: ["Heizung", "Keller", "EG", "OG", "Garage", "Wallbox"],
           textinfo: "value",
           textposition: "inside",
           texttemplate:
-            "<span style='font-size: 0.8em; font-weigth: 700; color: var(--primary-text-color);'>%{value:.0f} kWh</span>",
+            "<span style='font-size: 0.9em; font-weigth: 900; color: var(--primary-text-color);'>%{value:.0f}</span>",
           hole: 0.7,
           marker: {
-            colors: ["#d08770", "#88c0d0", "#a3be8c", "#b48ead", "#8fbcbb"],
+            colors: ["#d08770", "#88c0d0", "#8185c1", "#b48ead", "#8fbcbb", "#a3be8c"],
           },
           text: "$ex Number(hass.states['sensor.goodwe_today_load'].state) / 1000",
           sort: false,
@@ -302,7 +308,7 @@ export class StromNow extends Room {
     stromug: "shelly_keller_total_active_power",
     stromeg: "shelly_eg_total_active_power",
     stromog: "shelly3em63g3_b08184e0b6e0_total_active_power",
-    stromgarage: "shelly_garage_total_active_power",
+    stromgarage: "shelly_garage_w_o_wallbox",
   };
 
   static get styles() {

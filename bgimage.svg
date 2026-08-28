@@ -539,7 +539,7 @@
 	<rect id="markisewest" x="1949.3" y="1002.5" class="st5" width="95" height="41.2"/>
 	<rect id="markiseost" x="2046.7" y="1002.5" class="st5" width="95" height="41.2"/>
 	<rect id="pvtoday" x="12" y="537.4" class="st5" width="324" height="66.1"/>
-	<rect id="car" x="42.1" y="1303.8" class="st5" width="375.8" height="200.9"/>
+	<rect id="car" x="0" y="1275.3" class="st5" width="432" height="235.3"/>
 	<rect id="lawnmower" x="1994.3" y="1207.2" class="st5" width="94" height="44.8"/>
 </g>
 <g id="Ebene_8">
