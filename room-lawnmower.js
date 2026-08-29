@@ -52,7 +52,6 @@ export class Lawnmower extends Room {
     super.updated();
     const lawn_mower =
       this.hass.states["lawn_mower.kleines_getwerk_lawn_mower"];
-    console.log("lawn_mower", lawn_mower);
     this.querySelector(`#${this.id}-icon`).className =
       `icon-lawnmower lawnmower-${lawn_mower.state}`;
   }
