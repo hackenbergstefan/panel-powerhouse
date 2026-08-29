@@ -12,7 +12,7 @@ export class Car extends Room {
       "sensor.wallbox_ladestatus",
       "sensor.id_3_pro_performance_battery",
       "sensor.id_3_pro_performance_electric_range",
-      "sensor.wallbox_ladeleistung"
+      "sensor.wallbox_ladeleistung",
     ];
   }
 
@@ -21,9 +21,9 @@ export class Car extends Room {
       .icon-car {
         mask-image: url("local/powerhouse/car.svg");
         mask-repeat: no-repeat;
-        position: absolute;
         width: 180px;
-        height: 120px;
+        height: 98px;
+        position: absolute;
         top: 20px;
         right: 20px;
       }
@@ -37,6 +37,10 @@ export class Car extends Room {
         to {
           filter: drop-shadow(0 0 10px var(--aurora-green));
         }
+      }
+      .text-pulse-glow-green {
+        animation: text-pulse-glow-green 1s infinite alternate;
+        color: var(--aurora-green);
       }
       .car-charging {
         background: var(--aurora-green);
@@ -77,22 +81,32 @@ export class Car extends Room {
   updated() {
     super.updated();
 
-    // const wallboxState = this.hass.states["sensor.wallbox_ladestatus"].state;
-    // const wallboxStates = { A: "disconnected", B: "connected", C: "charging" };
-    // this.querySelector(`#${this.id}-icon`).className =
-    //   `icon-car car-${wallboxStates[wallboxState]}`;
-
-    const soc = Number(this.hass.states["sensor.id_3_pro_performance_battery"].state);
+    const plugged =
+      this.hass.states["sensor.id_3_pro_performance_plug"].state ===
+      "connected";
+    const color = plugged ? "aurora-green" : "frost-green";
+    const soc = Number(
+      this.hass.states["sensor.id_3_pro_performance_battery"].state,
+    );
     setInnerNumeric(this.renderRoot, `#${this.id}-soc span`, soc, 0);
-    this.querySelector(`#${this.id}-icon`).style.background = `linear-gradient(to top, var(--aurora-green) ${soc}%, var(--polar-light-gray) ${soc}%)`;
+    this.querySelector(`#${this.id}-icon`).style.background =
+      `linear-gradient(to top, var(--${color}) ${soc}%, var(--polar-light-gray) ${soc}%)`;
 
-
-    const range = this.hass.states["sensor.id_3_pro_performance_electric_range"].state;
+    const range =
+      this.hass.states["sensor.id_3_pro_performance_electric_range"].state;
     setInnerNumeric(this.renderRoot, `#${this.id}-range span`, range, 0);
 
-    const chargePower = Number(this.hass.states["sensor.wallbox_ladeleistung"].state) / 1000;
-    setInnerNumeric(this.renderRoot, `#${this.id}-chargePower span`, chargePower, 0);
-    this.querySelector(`#${this.id}-chargePower`).classList.toggle("text-pulse-glow-green", chargePower > 0);
+    const chargePower =
+      Number(this.hass.states["sensor.wallbox_ladeleistung"].state) / 1000;
+    setInnerNumeric(
+      this.renderRoot,
+      `#${this.id}-chargePower span`,
+      chargePower,
+      0,
+    );
+    this.querySelector(
+      `#${this.id}-chargePower`,
+    ).parentElement.classList.toggle("text-pulse-glow-green", chargePower > 0);
   }
 }
 customElements.define("room-car", Car);
