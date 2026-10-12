@@ -115,13 +115,9 @@ export class HouseBackground extends LitElement {
     const viewBox = this.svg.attributes.viewBox;
     const [_x, _y, svgWidth, svgHeight] = viewBox.value.split(" ");
     const margin = 5;
-    let bgwidth = window.innerWidth;
-    let bgheight = (svgHeight / svgWidth) * bgwidth;
-    if (window.innerHeight < window.innerWidth) {
-      bgheight = window.innerHeight;
-      bgwidth = (svgWidth / svgHeight) * bgheight;
-      console.log(bgwidth, bgheight);
-    }
+    // Fixed design resolution; the panel scales the whole stage via CSS transform.
+    const bgwidth = 2400;
+    const bgheight = 1600;
     this.renderRoot.style.setProperty("--svg-height", `${bgheight}px`);
     this.renderRoot.style.setProperty("--svg-width", `${bgwidth}px`);
 

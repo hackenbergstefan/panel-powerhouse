@@ -56,21 +56,15 @@ class TabletPanel extends LitElement {
 
     console.log("connected");
 
-    const viewport = document.head.querySelector('meta[name="viewport"]');
-    const innerWidth = window.innerWidth;
-    const meta = `width=device-width, initial-scale=${
-      innerWidth / 2400
-    }, minimum-scale=${
-      innerWidth / 2400
-    }, maximum-scale=0.75, user-scalable=no`;
-    if (viewport) {
-      viewport.setAttribute("content", meta);
-    } else {
-      viewport = document.createElement("meta");
-      viewport.name = "viewport";
-      viewport.content = meta;
-      document.head.appendChild(viewport);
-    }
+    this._updateScale();
+    this._viewport = document.head.querySelector('meta[name="viewport"]');
+    this._origViewport = this._viewport?.getAttribute("content");
+    this._viewport?.setAttribute(
+      "content",
+      "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, user-scalable=yes",
+    );
+    this._resizeObserver = new ResizeObserver(() => this._updateScale());
+    this._resizeObserver.observe(this);
     document
       .querySelector("home-assistant")
       .shadowRoot.querySelector("home-assistant-main")
@@ -82,10 +76,20 @@ class TabletPanel extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._resizeObserver?.disconnect();
+    if (this._origViewport) {
+      this._viewport?.setAttribute("content", this._origViewport);
+    }
     if (this._pollTimer) {
       clearInterval(this._pollTimer);
       this._pollTimer = null;
     }
+  }
+
+  _updateScale() {
+    const w = this.clientWidth || window.innerWidth;
+    const h = this.clientHeight || window.innerHeight;
+    this.style.setProperty("--stage-scale", Math.min(w / 2400, h / 1600));
   }
 
   _setupPolling() {
@@ -202,6 +206,7 @@ class TabletPanel extends LitElement {
           bottom: 0;
           overflow: hidden;
 
+          --stage-scale: 1;
           --mdc-icon-size: 100%;
           --aurora-red: #bf616a;
           --aurora-blue: #5e81ac;
@@ -235,6 +240,17 @@ class TabletPanel extends LitElement {
           --state-active-color: var(--aurora-orange);
         }
       `,
+      css`
+        #stage {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 2400px;
+          height: 1600px;
+          transform: translate(-50%, -50%) scale(var(--stage-scale));
+          transform-origin: center center;
+        }
+      `,
       TabletPanel.cssContainers,
       TabletPanel.cssShortcuts,
       TabletPanel.cssStyles,
@@ -261,9 +277,9 @@ class TabletPanel extends LitElement {
       }}
     ></house-background>`;
     if (!this.hass || !this._backgroundReady) {
-      return bg;
+      return html`<div id="stage">${bg}</div>`;
     }
-    return [
+    return html`<div id="stage">${[
       bg,
       html`<room-clock .panel=${this} .hass=${this.hass}></room-clock>`,
       ...[
@@ -411,7 +427,7 @@ class TabletPanel extends LitElement {
         .hass=${this.hass}
         id="lawnmower"
       ></room-lawnmower>`,
-    ];
+    ]}</div>`;
   }
 }
 customElements.define("tablet-panel", TabletPanel);
