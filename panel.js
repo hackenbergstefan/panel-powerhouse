@@ -65,11 +65,12 @@ class TabletPanel extends LitElement {
     );
     this._resizeObserver = new ResizeObserver(() => this._updateScale());
     this._resizeObserver.observe(this);
-    document
+    this._drawer = document
       .querySelector("home-assistant")
       .shadowRoot.querySelector("home-assistant-main")
-      .shadowRoot.querySelector("ha-drawer")
-      .setAttribute("style", "--ha-sidebar-width: 0");
+      .shadowRoot.querySelector("ha-drawer");
+    this._origDrawerStyle = this._drawer.getAttribute("style");
+    this._drawer.setAttribute("style", "--ha-sidebar-width: 0");
 
     this._setupPolling();
   }
@@ -77,6 +78,14 @@ class TabletPanel extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._resizeObserver?.disconnect();
+    if (this._drawer) {
+      if (this._origDrawerStyle === null) {
+        this._drawer.removeAttribute("style");
+      } else {
+        this._drawer.setAttribute("style", this._origDrawerStyle);
+      }
+      this._drawer = null;
+    }
     if (this._origViewport) {
       this._viewport?.setAttribute("content", this._origViewport);
     }
