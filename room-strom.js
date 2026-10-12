@@ -322,24 +322,36 @@ export class StromNow extends Room {
         mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3l7 9-7 9M7 3l7 9-7 9'/%3E%3C/svg%3E");
         -webkit-mask-repeat: no-repeat;
         mask-repeat: no-repeat;
+        position: relative;
+        transform: scaleX(-1);
+      }
+
+      .flow-chevron::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 120px;
+        height: 100%;
         background: linear-gradient(
           to right,
           var(--power-color-transparent) 0%,
           rgba(255, 255, 255, 1) 50%,
           var(--power-color-transparent) 100%
         );
-        background-size: 500% 100%;
-        animation: chevron-pulse var(--power-animation-duration) linear infinite;
-        transform: scaleX(-1);
+        background-size: 100px 100%;
+        will-change: transform;
+        animation: chevron-pulse calc(var(--power-animation-duration) / 8) linear
+          infinite;
       }
 
       @keyframes chevron-pulse {
-        0% {
-          background-position: 500% 0;
+        from {
+          transform: translateX(-100px);
         }
 
-        100% {
-          background-position: -500% 0;
+        to {
+          transform: translateX(0);
         }
       }
     `;
@@ -400,21 +412,24 @@ export class StromNow extends Room {
     const power = this.hass.states[`sensor.${StromNow.mapping[this.id]}`].state;
     setInnerNumeric(this.renderRoot, `#${this.id} span`, power, { decimal: 0 });
 
+    const alpha = Math.round(Math.min(power / 3000, 1) * 10) / 10;
     const [color, colorTransparent] = {
-      pv: ["rgb(235, 203, 139)", `rgba(235, 203, 139, ${power / 3000})`],
-      bat: ["rgb(94, 129, 172)", `rgba(94, 129, 172, ${power / 3000})`],
-      grid: ["rgb(191, 97, 106)", `rgba(191, 97, 106, ${power / 3000})`],
-      unknown: ["rgb(0,0,0)", `rgba(0,0,0, ${power / 3000})`],
+      pv: ["rgb(235, 203, 139)", `rgba(235, 203, 139, ${alpha})`],
+      bat: ["rgb(94, 129, 172)", `rgba(94, 129, 172, ${alpha})`],
+      grid: ["rgb(191, 97, 106)", `rgba(191, 97, 106, ${alpha})`],
+      unknown: ["rgb(0,0,0)", `rgba(0,0,0, ${alpha})`],
     }[powerMode(this.hass)];
 
-    this.renderRoot.style.setProperty("--power-color", color);
-    this.renderRoot.style.setProperty(
-      "--power-color-transparent",
-      colorTransparent,
-    );
-    this.renderRoot.style.setProperty(
+    // Only write changed values: a changed duration makes the running animation jump.
+    const style = this.renderRoot.style;
+    const set = (name, value) => {
+      if (style.getPropertyValue(name) !== value) style.setProperty(name, value);
+    };
+    set("--power-color", color);
+    set("--power-color-transparent", colorTransparent);
+    set(
       "--power-animation-duration",
-      `${15 - power / 1000}s`,
+      `${Math.max(3, Math.round(15 - power / 1000))}s`,
     );
   }
 }
@@ -551,13 +566,30 @@ export class StromHausAnimation extends Room {
   static get styles() {
     return css`
       @keyframes foo {
-        0% {
-          background-position: 0 -100%;
+        from {
+          transform: translateY(-100%);
         }
 
-        100% {
-          background-position: 0 200%;
+        to {
+          transform: translateY(200%);
         }
+      }
+      room-strom-haus-animation::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 50%;
+        background-image: linear-gradient(
+          0deg,
+          rgba(255, 0, 0, 0) 0%,
+          var(--strom-haus-color) 50%,
+          rgba(255, 0, 0, 0) 100%
+        );
+        will-change: transform;
+        animation: foo 5s linear infinite;
+        animation-direction: var(--strom-haus-animation-direction);
       }
       room-strom-haus-animation {
         position: absolute;
@@ -566,19 +598,8 @@ export class StromHausAnimation extends Room {
         width: 100%;
         height: 100%;
         pointer-events: none;
+        overflow: hidden;
         mask: url("#haus-mask");
-
-        background-image: linear-gradient(
-          0deg,
-          rgba(255, 0, 0, 0) 0%,
-          var(--strom-haus-color) 50%,
-          rgba(255, 0, 0, 0) 100%
-        );
-        background-position: 0 0%;
-        background-size: 100% 50%;
-        background-repeat: no-repeat;
-        animation: foo 5s linear infinite;
-        animation-direction: var(--strom-haus-animation-direction);
       }
       room-strom-haus-animation polyline {
         stroke: #ffffff !important;
@@ -603,7 +624,6 @@ export class StromHausAnimation extends Room {
       bat: ["aurora-blue", "reverse"],
       grid: ["aurora-red", "normal"],
     }[powerMode(this.hass)];
-    console.log(color, direction);
 
     this.renderRoot.style.setProperty(
       "--strom-haus-animation-direction",

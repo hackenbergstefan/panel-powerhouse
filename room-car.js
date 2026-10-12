@@ -39,7 +39,7 @@ export class Car extends Room {
         }
       }
       .text-pulse-glow-green {
-        animation: text-pulse-glow-green 1s infinite alternate;
+        animation: text-pulse-glow-green 1s steps(6) infinite alternate;
         color: var(--aurora-green);
       }
       .car-charging {

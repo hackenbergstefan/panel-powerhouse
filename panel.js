@@ -161,7 +161,7 @@ class TabletPanel extends LitElement {
         }
       }
       .text-pulse-glow {
-        animation: text-pulse-glow 2s infinite alternate;
+        animation: text-pulse-glow 2s steps(10) infinite alternate;
       }
       @keyframes pulse-glow {
         to {
@@ -308,14 +308,12 @@ class TabletPanel extends LitElement {
             .panel=${this}
             .hass=${this.hass}
             id="${id}"
-            class="pulse-glow"
           ></room-climate>`,
       ),
       html`<room-heizung
         .panel=${this}
         .hass=${this.hass}
         id="heizung"
-        class="pulse-glow-yellow"
       ></room-heizung>`,
       html`<room-gewachshaus
         .panel=${this}
@@ -409,19 +407,25 @@ class TabletPanel extends LitElement {
       html`<room-strom-haus-animation
         .panel=${this}
         .hass=${this.hass}
-        .haus=${this.renderRoot.querySelector("#haus").cloneNode(true)}
+        .haus=${(this._hausClone ??= this.renderRoot
+          .querySelector("#haus")
+          .cloneNode(true))}
       ></room-strom-haus-animation>`,
       html`<room-awning
         .panel=${this}
         .hass=${this.hass}
-        .icon=${this.renderRoot.querySelector("#markise").cloneNode(true)}
+        .icon=${(this._markiseOst ??= this.renderRoot
+          .querySelector("#markise")
+          .cloneNode(true))}
         id="markiseost"
         awning="ost"
       ></room-awning>`,
       html`<room-awning
         .panel=${this}
         .hass=${this.hass}
-        .icon=${this.renderRoot.querySelector("#markise").cloneNode(true)}
+        .icon=${(this._markiseWest ??= this.renderRoot
+          .querySelector("#markise")
+          .cloneNode(true))}
         id="markisewest"
         awning="west"
       ></room-awning>`,
